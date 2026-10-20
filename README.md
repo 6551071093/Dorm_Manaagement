@@ -222,7 +222,7 @@ Quản lý tiến độ dự án trên [Jira Board (KAN)](https://studentdorm.at
 
 | Chương môn học | Nội dung kỹ thuật yêu cầu | Minh chứng thực tế trong Repository | Điểm |
 |---|---|---|:---:|
-| **Chương 1-2** | Cấu trúc .NET 9, Clean Architecture, OOP, LINQ, Async/Await | Phân tầng rõ rệt 4 project; Service, Repository, DTO; LINQ Async (`ToListAsync()`, `SaveChangesAsync()`). | 1.0 |
+| **Chương 1-2** | Cấu trúc .NET 10, Clean Architecture, OOP, LINQ, Async/Await | Phân tầng rõ rệt 4 project; Service, Repository, DTO; LINQ Async (`ToListAsync()`, `SaveChangesAsync()`). | 1.0 |
 | **Chương 3** | Controls, DataGridView, Điều hướng Desktop MDI/MenuStrip, DPI | `MainForm` điều hướng MenuStrip; DataGridView binding dữ liệu thật từ SQL Server; hỗ trợ độ phân giải cao. | 1.0 |
 | **Chương 4** | Sự kiện, Validation dữ liệu, ErrorProvider, Phím tắt | Kiểm tra lỗi nhập liệu chặt chẽ bằng `ErrorProvider`; phím tắt thao tác nhanh (`Ctrl+S`, `F5`); tìm kiếm realtime. | 1.0 |
 | **Chương 5** | I/O, Excel ClosedXML, Tác vụ nền Async & ProgressBar | Xuất/Nhập danh sách sinh viên qua Excel bằng ClosedXML chạy nền (`Task.Run`), có thanh `ProgressBar` chống đơ UI. | 1.0 |
