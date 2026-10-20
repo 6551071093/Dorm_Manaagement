@@ -1,4 +1,4 @@
-# 🏢 HỆ THỐNG QUẢN LÝ KÝ TÚC XÁ (QuanLyKyTucXa)
+#  HỆ THỐNG QUẢN LÝ KÝ TÚC XÁ (QuanLyKyTucXa)
 
 [![.NET Version](https://img.shields.io/badge/.NET-10.0%20%7C%2010.0-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![C# Version](https://img.shields.io/badge/C%23-12%20%2F%2013-239120?logo=csharp&logoColor=white)](https://learn.microsoft.com/en-us/dotnet/csharp/)
