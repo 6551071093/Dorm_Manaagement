@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\QuanLyKyTucXa.Application\QuanLyKyTucXa.Application.csproj" />
+    <ProjectReference Include="..\QuanLyKyTucXa.Domain\QuanLyKyTucXa.Domain.csproj" />
+    <ProjectReference Include="..\QuanLyKyTucXa.Infrastructure\QuanLyKyTucXa.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Forms\Auth\" />
+    <Folder Include="Forms\Residents\" />
+    <Folder Include="Forms\Rooms\" />
+    <Folder Include="Forms\Contracts\" />
+    <Folder Include="Forms\Utilities\" />
+    <Folder Include="Forms\Invoices\" />
+    <Folder Include="Forms\Incidents\" />
+    <Folder Include="Forms\Reports\" />
+    <Folder Include="Forms\Users\" />
+    <Folder Include="Forms\Main\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.13">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.13" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.13" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="10.0.13" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.13" />
+    <PackageReference Include="Serilog" Version="4.4.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+  </ItemGroup>
+
+</Project>

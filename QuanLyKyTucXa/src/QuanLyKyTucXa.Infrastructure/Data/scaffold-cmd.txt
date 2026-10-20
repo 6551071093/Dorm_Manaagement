@@ -1,0 +1,10 @@
+# ============================================================================
+# CÂU LỆNH CHẠY SCAFFOLD EF CORE DATABASE FIRST (QuanLyKyTucXa)
+# ============================================================================
+
+# 1. Chạy trong Visual Studio (Package Manager Console):
+# Chọn Default Project: QuanLyKyTucXa.Infrastructure
+Scaffold-DbContext "Server=localhost;Database=QuanLyKTXDB;Trusted_Connection=True;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir ../QuanLyKyTucXa.Domain/Entities -ContextDir Data/Context -Context AppDbContext -Force
+
+# 2. Chạy qua .NET CLI (Terminal tại thư mục gốc repository):
+dotnet ef dbcontext scaffold "Server=localhost;Database=QuanLyKTXDB;Trusted_Connection=True;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer --project src/QuanLyKyTucXa.Infrastructure --startup-project src/QuanLyKyTucXa.WinForms --output-dir ../QuanLyKyTucXa.Domain/Entities --context-dir Data/Context --context AppDbContext --force

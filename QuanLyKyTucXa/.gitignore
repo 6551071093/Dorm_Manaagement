@@ -1,0 +1,62 @@
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio files
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.opensdf
+*.sdf
+*.sublime-workspace
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userprefs
+
+# NuGet Packages
+*.nupkg
+*.snupkg
+**/packages/*
+!**/packages/build/
+project.lock.json
+project.assets.json
+*.nuget.props
+*.nuget.targets
+
+# Logs (Serilog & runtime logs - Auto generated, DO NOT COMMIT)
+Logs/
+logs/
+*.log
+
+# Database backups (keep backups folder tracked, but exclude large .bak binary)
+database/backups/*.bak
+*.mdf
+*.ldf
+
+# Artifacts & publish outputs
+artifacts/publish/*
+!artifacts/publish/.gitkeep
+artifacts/demo/*
+!artifacts/demo/.gitkeep
+
+# Operating System files
+.DS_Store
+Thumbs.db
+desktop.ini

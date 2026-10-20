@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/QuanLyKyTucXa.Application/QuanLyKyTucXa.Application.csproj" />
+    <Project Path="src/QuanLyKyTucXa.Domain/QuanLyKyTucXa.Domain.csproj" />
+    <Project Path="src/QuanLyKyTucXa.Infrastructure/QuanLyKyTucXa.Infrastructure.csproj" />
+    <Project Path="src/QuanLyKyTucXa.WinForms/QuanLyKyTucXa.WinForms.csproj" />
+  </Folder>
+</Solution>

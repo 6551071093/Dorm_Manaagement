@@ -1,0 +1,2 @@
+# Thư mục này dành cho EF Core Scaffold-DbContext tự động sinh ra 13 entities.
+# Tuyệt đối không tạo tay các file SinhVien.cs, Phong.cs, HoaDon.cs,... tại đây.
