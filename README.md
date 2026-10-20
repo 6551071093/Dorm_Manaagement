@@ -1,13 +1,13 @@
 # 🏢 HỆ THỐNG QUẢN LÝ KÝ TÚC XÁ (QuanLyKyTucXa)
 
-[![.NET Version](https://img.shields.io/badge/.NET-9.0%20%7C%2010.0-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![.NET Version](https://img.shields.io/badge/.NET-10.0%20%7C%2010.0-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![C# Version](https://img.shields.io/badge/C%23-12%20%2F%2013-239120?logo=csharp&logoColor=white)](https://learn.microsoft.com/en-us/dotnet/csharp/)
 [![Architecture](https://img.shields.io/badge/Architecture-Clean%20Architecture%204--Layer-orange)](#-kiến-trúc-hệ-thống)
 [![Database](https://img.shields.io/badge/Database-SQL%20Server%20%28Database--First%29-CC292B?logo=microsoftsqlserver&logoColor=white)](#-cơ-sở-dữ-liệu--database-first)
 [![Jira Board](https://img.shields.io/badge/Jira-Project%20KAN-0052CC?logo=jira&logoColor=white)](https://studentdorm.atlassian.net/jira/software/projects/KAN/boards/2)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20Forms%20%28Desktop%29-blue)](#)
 
-> Ứng dụng Desktop chuyên nghiệp quản lý ký túc xá sinh viên trên nền tảng **Windows Forms (.NET 9 / C# 13)**, phát triển theo mô hình **Entity Framework Core Database-First** kết hợp **Clean Architecture** phân tầng độc lập. Đồ án học phần Lập trình trực quan (LTTQ) hướng tới chuẩn điểm tối đa (10/10).
+> Ứng dụng Desktop chuyên nghiệp quản lý ký túc xá sinh viên trên nền tảng **Windows Forms (.NET 10 / C# 13)**, phát triển theo mô hình **Entity Framework Core Database-First** kết hợp **Clean Architecture** phân tầng độc lập. Đồ án học phần Lập trình trực quan (LTTQ) hướng tới chuẩn điểm tối đa (10/10).
 
 ---
 
@@ -37,7 +37,7 @@ Hệ thống **Quản lý Ký túc xá** giải quyết bài toán vận hành t
 
 | Lớp công nghệ | Chi tiết sử dụng |
 |---|---|
-| **Nền tảng & Ngôn ngữ** | .NET 9.0 / .NET 10.0, C# 12/13, Windows Forms Desktop Application |
+| **Nền tảng & Ngôn ngữ** | .NET 10.0 / .NET 10.0, C# 12/13, Windows Forms Desktop Application |
 | **Kiến trúc** | Clean Architecture (4-Layer: Presentation, Application, Infrastructure, Domain) |
 | **Cơ sở dữ liệu & ORM** | SQL Server (LocalDB / Express), **Entity Framework Core Database-First** (`Scaffold-DbContext`) |
 | **Minh chứng độc lập** | **ADO.NET thuần** (`SqlCommand`, `SqlDataReader`, `StoredProcedure`) minh chứng Chương 7 |
