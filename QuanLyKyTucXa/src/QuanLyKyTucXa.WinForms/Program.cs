@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using QuanLyKyTucXa.WinForms.Forms.Main;
+
 namespace QuanLyKyTucXa.WinForms
 {
     internal static class Program
