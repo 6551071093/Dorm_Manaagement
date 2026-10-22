@@ -1,44 +1,298 @@
-namespace QuanLyKyTucXa.WinForms
+#nullable enable
+namespace QuanLyKyTucXa.WinForms.Forms.Main;
+
+partial class FrmMain
 {
-    partial class FrmMain
+    private System.ComponentModel.IContainer? components;
+    private MenuStrip menuStripMain = null!;
+    private ToolStrip toolStripMain = null!;
+    private TabControl tabWorkspace = null!;
+    private TabPage tabDashboard = null!, tabRooms = null!, tabStudents = null!;
+    private StatusStrip classicStatus = null!;
+    private ToolStripStatusLabel classicStatusText = null!, classicAccountText = null!;
+    private ToolStripMenuItem mnuSystem = null!;
+    private ToolStripMenuItem mnuHome = null!;
+    private ToolStripMenuItem mnuExit = null!;
+    private ToolStripMenuItem mnuCatalog = null!;
+    private ToolStripMenuItem mnuStudents = null!;
+    private ToolStripMenuItem mnuTowers = null!;
+    private ToolStripMenuItem mnuRooms = null!;
+    private ToolStripMenuItem mnuBeds = null!;
+    private ToolStripMenuItem mnuPrices = null!;
+    private ToolStripMenuItem mnuBusiness = null!;
+    private ToolStripMenuItem mnuContracts = null!;
+    private ToolStripMenuItem mnuRegister = null!;
+    private ToolStripMenuItem mnuLookup = null!;
+    private ToolStripMenuItem mnuApprove = null!;
+    private ToolStripMenuItem mnuInvoices = null!;
+    private ToolStripMenuItem mnuIncidents = null!;
+    private ToolStripMenuItem mnuUtility = null!;
+    private ToolStripMenuItem mnuReadings = null!;
+    private ToolStripMenuItem mnuReports = null!;
+    private ToolStripMenuItem mnuReportSummary = null!;
+    private ToolStripMenuItem mnuWindows = null!;
+    private ToolStripMenuItem mnuCloseTab = null!;
+    private ToolStripMenuItem mnuDashboard = null!;
+    private ToolStripMenuItem mnuHelp = null!;
+    private ToolStripMenuItem mnuAbout = null!;
+    private ToolStripButton tsStudents = null!;
+    private ToolStripButton tsRooms = null!;
+    private ToolStripButton tsContracts = null!;
+    private ToolStripButton tsInvoices = null!;
+    private ToolStripButton tsIncidents = null!;
+    private ToolStripButton tsRefresh = null!;
+    private ToolStripButton tsExport = null!;
+    private ToolStripSeparator toolSeparator = null!;
+
+    protected override void Dispose(bool disposing)
     {
-        /// <summary>
-        ///  Required designer variable.
-        /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        if (disposing) components?.Dispose();
+        base.Dispose(disposing);
+    }
 
-        /// <summary>
-        ///  Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        ///  Required method for Designer support - do not modify
-        ///  the contents of this method with the code editor.
-        /// </summary>
-        private void InitializeComponent()
-        {
-            SuspendLayout();
-            // 
-            // FrmMain
-            // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
-            AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
-            Name = "FrmMain";
-            ResumeLayout(false);
-        }
-
-        #endregion
+    private void InitializeComponent()
+    {
+        components = new System.ComponentModel.Container();
+        menuStripMain = new MenuStrip();
+        toolStripMain = new ToolStrip();
+        tabWorkspace = new TabControl();
+        tabDashboard = new TabPage();
+        tabRooms = new TabPage();
+        tabStudents = new TabPage();
+        classicStatus = new StatusStrip();
+        classicStatusText = new ToolStripStatusLabel();
+        classicAccountText = new ToolStripStatusLabel();
+        toolSeparator = new ToolStripSeparator();
+        mnuSystem = new ToolStripMenuItem();
+        mnuHome = new ToolStripMenuItem();
+        mnuExit = new ToolStripMenuItem();
+        mnuCatalog = new ToolStripMenuItem();
+        mnuStudents = new ToolStripMenuItem();
+        mnuTowers = new ToolStripMenuItem();
+        mnuRooms = new ToolStripMenuItem();
+        mnuBeds = new ToolStripMenuItem();
+        mnuPrices = new ToolStripMenuItem();
+        mnuBusiness = new ToolStripMenuItem();
+        mnuContracts = new ToolStripMenuItem();
+        mnuRegister = new ToolStripMenuItem();
+        mnuLookup = new ToolStripMenuItem();
+        mnuApprove = new ToolStripMenuItem();
+        mnuInvoices = new ToolStripMenuItem();
+        mnuIncidents = new ToolStripMenuItem();
+        mnuUtility = new ToolStripMenuItem();
+        mnuReadings = new ToolStripMenuItem();
+        mnuReports = new ToolStripMenuItem();
+        mnuReportSummary = new ToolStripMenuItem();
+        mnuWindows = new ToolStripMenuItem();
+        mnuCloseTab = new ToolStripMenuItem();
+        mnuDashboard = new ToolStripMenuItem();
+        mnuHelp = new ToolStripMenuItem();
+        mnuAbout = new ToolStripMenuItem();
+        tsStudents = new ToolStripButton();
+        tsRooms = new ToolStripButton();
+        tsContracts = new ToolStripButton();
+        tsInvoices = new ToolStripButton();
+        tsIncidents = new ToolStripButton();
+        tsRefresh = new ToolStripButton();
+        tsExport = new ToolStripButton();
+        SuspendLayout();
+        menuStripMain.SuspendLayout();
+        toolStripMain.SuspendLayout();
+        tabWorkspace.SuspendLayout();
+        classicStatus.SuspendLayout();
+        menuStripMain.Name = "menuStripMain";
+        menuStripMain.Dock = DockStyle.Top;
+        menuStripMain.Font = new Font("Segoe UI", 11F);
+        menuStripMain.BackColor = Color.FromArgb(247, 247, 251);
+        menuStripMain.Padding = new Padding(8, 4, 0, 4);
+        menuStripMain.Items.AddRange(new ToolStripItem[] { mnuSystem, mnuCatalog, mnuBusiness, mnuUtility, mnuReports, mnuWindows, mnuHelp });
+        mnuSystem.Name = "mnuSystem";
+        mnuSystem.Text = "Hệ thống";
+        mnuSystem.DropDownItems.AddRange(new ToolStripItem[] { mnuHome, mnuExit });
+        mnuHome.Name = "mnuHome";
+        mnuHome.Text = "Dashboard";
+        mnuHome.Click += Home_Click;
+        mnuExit.Name = "mnuExit";
+        mnuExit.Text = "Thoát";
+        mnuExit.Click += Exit_Click;
+        mnuCatalog.Name = "mnuCatalog";
+        mnuCatalog.Text = "Danh mục";
+        mnuCatalog.DropDownItems.AddRange(new ToolStripItem[] { mnuStudents, mnuTowers, mnuRooms, mnuBeds, mnuPrices });
+        mnuStudents.Name = "mnuStudents";
+        mnuStudents.Text = "Sinh viên";
+        mnuStudents.Click += Students_Click;
+        mnuTowers.Name = "mnuTowers";
+        mnuTowers.Text = "Tòa nhà";
+        mnuTowers.Click += Towers_Click;
+        mnuRooms.Name = "mnuRooms";
+        mnuRooms.Text = "Phòng";
+        mnuRooms.Click += Rooms_Click;
+        mnuBeds.Name = "mnuBeds";
+        mnuBeds.Text = "Giường";
+        mnuBeds.Click += Beds_Click;
+        mnuPrices.Name = "mnuPrices";
+        mnuPrices.Text = "Bảng giá và dịch vụ";
+        mnuPrices.Click += Prices_Click;
+        mnuBusiness.Name = "mnuBusiness";
+        mnuBusiness.Text = "Nghiệp vụ";
+        mnuBusiness.DropDownItems.AddRange(new ToolStripItem[] { mnuContracts, mnuRegister, mnuLookup, mnuApprove, mnuInvoices, mnuIncidents });
+        mnuContracts.Name = "mnuContracts";
+        mnuContracts.Text = "Hợp đồng";
+        mnuContracts.Click += Contracts_Click;
+        mnuRegister.Name = "mnuRegister";
+        mnuRegister.Text = "Đăng ký KTX";
+        mnuRegister.Click += Register_Click;
+        mnuLookup.Name = "mnuLookup";
+        mnuLookup.Text = "Tra cứu đơn";
+        mnuLookup.Click += Lookup_Click;
+        mnuApprove.Name = "mnuApprove";
+        mnuApprove.Text = "Duyệt đơn";
+        mnuApprove.Click += Approve_Click;
+        mnuInvoices.Name = "mnuInvoices";
+        mnuInvoices.Text = "Hóa đơn";
+        mnuInvoices.Click += Invoices_Click;
+        mnuIncidents.Name = "mnuIncidents";
+        mnuIncidents.Text = "Sự cố";
+        mnuIncidents.Click += Incidents_Click;
+        mnuUtility.Name = "mnuUtility";
+        mnuUtility.Text = "Điện nước";
+        mnuUtility.DropDownItems.AddRange(new ToolStripItem[] { mnuReadings });
+        mnuReadings.Name = "mnuReadings";
+        mnuReadings.Text = "Nhập chỉ số điện nước";
+        mnuReadings.Click += Utilities_Click;
+        mnuReports.Name = "mnuReports";
+        mnuReports.Text = "Thống kê";
+        mnuReports.DropDownItems.AddRange(new ToolStripItem[] { mnuReportSummary });
+        mnuReportSummary.Name = "mnuReportSummary";
+        mnuReportSummary.Text = "Thống kê tổng hợp";
+        mnuReportSummary.Click += Reports_Click;
+        mnuWindows.Name = "mnuWindows";
+        mnuWindows.Text = "Cửa sổ";
+        mnuWindows.DropDownItems.AddRange(new ToolStripItem[] { mnuCloseTab, mnuDashboard });
+        mnuCloseTab.Name = "mnuCloseTab";
+        mnuCloseTab.Text = "Đóng tab hiện tại";
+        mnuCloseTab.Click += CloseTab_Click;
+        mnuDashboard.Name = "mnuDashboard";
+        mnuDashboard.Text = "Về Dashboard";
+        mnuDashboard.Click += Home_Click;
+        mnuHelp.Name = "mnuHelp";
+        mnuHelp.Text = "Trợ giúp";
+        mnuHelp.DropDownItems.AddRange(new ToolStripItem[] { mnuAbout });
+        mnuAbout.Name = "mnuAbout";
+        mnuAbout.Text = "Giới thiệu";
+        mnuAbout.Click += About_Click;
+        mnuStudents.ShortcutKeys = Keys.Control | Keys.Shift | Keys.S;
+        mnuRooms.ShortcutKeys = Keys.Control | Keys.Shift | Keys.P;
+        mnuCloseTab.ShortcutKeys = Keys.Control | Keys.W;
+        toolStripMain.Name = "toolStripMain";
+        toolStripMain.Dock = DockStyle.Top;
+        toolStripMain.AutoSize = false;
+        toolStripMain.Height = 46;
+        toolStripMain.GripStyle = ToolStripGripStyle.Hidden;
+        toolStripMain.BackColor = Color.FromArgb(237, 242, 248);
+        toolStripMain.Font = new Font("Segoe UI", 11F);
+        toolStripMain.ImageScalingSize = new Size(22, 22);
+        toolStripMain.Padding = new Padding(10, 2, 0, 2);
+        toolStripMain.Items.AddRange(new ToolStripItem[] { tsStudents, tsRooms, tsContracts, tsInvoices, tsIncidents, toolSeparator, tsRefresh, tsExport });
+        tsStudents.Name = "tsStudents";
+        tsStudents.Text = "Sinh viên";
+        tsStudents.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
+        tsStudents.Padding = new Padding(8, 3, 8, 3);
+        tsStudents.Margin = new Padding(0, 1, 4, 1);
+        tsStudents.Click += Students_Click;
+        tsRooms.Name = "tsRooms";
+        tsRooms.Text = "Phòng";
+        tsRooms.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
+        tsRooms.Padding = new Padding(8, 3, 8, 3);
+        tsRooms.Margin = new Padding(0, 1, 4, 1);
+        tsRooms.Click += Rooms_Click;
+        tsContracts.Name = "tsContracts";
+        tsContracts.Text = "Hợp đồng";
+        tsContracts.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
+        tsContracts.Padding = new Padding(8, 3, 8, 3);
+        tsContracts.Margin = new Padding(0, 1, 4, 1);
+        tsContracts.Click += Contracts_Click;
+        tsInvoices.Name = "tsInvoices";
+        tsInvoices.Text = "Hóa đơn";
+        tsInvoices.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
+        tsInvoices.Padding = new Padding(8, 3, 8, 3);
+        tsInvoices.Margin = new Padding(0, 1, 4, 1);
+        tsInvoices.Click += Invoices_Click;
+        tsIncidents.Name = "tsIncidents";
+        tsIncidents.Text = "Sự cố";
+        tsIncidents.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
+        tsIncidents.Padding = new Padding(8, 3, 8, 3);
+        tsIncidents.Margin = new Padding(0, 1, 4, 1);
+        tsIncidents.Click += Incidents_Click;
+        tsRefresh.Name = "tsRefresh";
+        tsRefresh.Text = "Làm mới";
+        tsRefresh.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
+        tsRefresh.Padding = new Padding(8, 3, 8, 3);
+        tsRefresh.Margin = new Padding(0, 1, 4, 1);
+        tsRefresh.Click += Refresh_Click;
+        tsExport.Name = "tsExport";
+        tsExport.Text = "Xuất Excel";
+        tsExport.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
+        tsExport.Padding = new Padding(8, 3, 8, 3);
+        tsExport.Margin = new Padding(0, 1, 4, 1);
+        tsExport.Click += Export_Click;
+        tabWorkspace.Name = "tabWorkspace";
+        tabWorkspace.Dock = DockStyle.Fill;
+        tabWorkspace.Padding = new Point(18, 9);
+        tabWorkspace.Font = new Font("Segoe UI", 11F);
+        tabWorkspace.Controls.Add(tabDashboard);
+        tabWorkspace.Controls.Add(tabRooms);
+        tabWorkspace.Controls.Add(tabStudents);
+        tabWorkspace.SelectedIndexChanged += Workspace_SelectedIndexChanged;
+        tabDashboard.Name = "tabDashboard";
+        tabDashboard.Text = "Dashboard";
+        tabDashboard.BackColor = Color.FromArgb(246, 246, 250);
+        tabDashboard.Padding = new Padding(0);
+        tabRooms.Name = "tabRooms";
+        tabRooms.Text = "Quản lý phòng";
+        tabRooms.BackColor = Color.FromArgb(246, 246, 250);
+        tabRooms.Padding = new Padding(0);
+        tabStudents.Name = "tabStudents";
+        tabStudents.Text = "Sinh viên";
+        tabStudents.BackColor = Color.FromArgb(246, 246, 250);
+        tabStudents.Padding = new Padding(0);
+        classicStatus.Name = "classicStatus";
+        classicStatus.Dock = DockStyle.Bottom;
+        classicStatus.BackColor = Color.FromArgb(27, 99, 180);
+        classicStatus.ForeColor = Color.White;
+        classicStatus.Font = new Font("Segoe UI", 9F);
+        classicStatus.SizingGrip = false;
+        classicStatus.Padding = new Padding(12, 4, 12, 4);
+        classicStatus.Items.AddRange(new ToolStripItem[] { classicStatusText, classicAccountText });
+        classicStatusText.Name = "classicStatusText";
+        classicStatusText.Text = "Sẵn sàng";
+        classicStatusText.Spring = true;
+        classicStatusText.TextAlign = ContentAlignment.MiddleLeft;
+        classicAccountText.Name = "classicAccountText";
+        classicAccountText.Text = "Tài khoản: tu.admin (Quản trị viên)";
+        AutoScaleDimensions = new SizeF(96F, 96F);
+        AutoScaleMode = AutoScaleMode.Dpi;
+        BackColor = Color.FromArgb(221, 228, 239);
+        ClientSize = new Size(1180, 740);
+        MinimumSize = new Size(930, 640);
+        Font = new Font("Segoe UI", 9F);
+        MainMenuStrip = menuStripMain;
+        Name = "FrmMain";
+        Text = "Quản lý ký túc xá - Quản trị viên";
+        StartPosition = FormStartPosition.CenterScreen;
+        WindowState = FormWindowState.Maximized;
+        Controls.Add(tabWorkspace);
+        Controls.Add(toolStripMain);
+        Controls.Add(menuStripMain);
+        Controls.Add(classicStatus);
+        menuStripMain.ResumeLayout(false);
+        menuStripMain.PerformLayout();
+        toolStripMain.ResumeLayout(false);
+        toolStripMain.PerformLayout();
+        tabWorkspace.ResumeLayout(false);
+        classicStatus.ResumeLayout(false);
+        classicStatus.PerformLayout();
+        ResumeLayout(false);
+        PerformLayout();
     }
 }
