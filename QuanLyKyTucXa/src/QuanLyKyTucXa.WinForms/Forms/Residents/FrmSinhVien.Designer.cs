@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 namespace QuanLyKyTucXa.WinForms.Forms.Residents;
 
 partial class FrmSinhVien
@@ -13,6 +13,9 @@ partial class FrmSinhVien
     private TextBox txtTimKiem = null!;
     private Button btnTimKiem = null!;
     private Button btnXuatExcel = null!;
+    private Button btnNhapExcel = null!;
+    private Button btnTaiMau = null!;
+    private ProgressBar prgExcel = null!;
     private Button btnThem = null!;
     private Button btnSua = null!;
     private Button btnXoa = null!;
@@ -36,7 +39,6 @@ partial class FrmSinhVien
 
     private void InitializeComponent()
     {
-        components = new System.ComponentModel.Container();
         var dataGridViewCellStyle4 = new DataGridViewCellStyle();
         var dataGridViewCellStyle5 = new DataGridViewCellStyle();
         var dataGridViewCellStyle6 = new DataGridViewCellStyle();
@@ -49,25 +51,19 @@ partial class FrmSinhVien
         lblLop = new Label();
         cboLop = new ComboBox();
         txtTimKiem = new TextBox();
-        this.btnTimKiem = new Button();
-        this.btnXuatExcel = new Button();
+        btnTimKiem = new Button();
+        btnXuatExcel = new Button();
+        btnNhapExcel = new Button();
+        btnTaiMau = new Button();
         dgvSinhVien = new DataGridView();
-        dataGridViewTextBoxColumn1 = new DataGridViewTextBoxColumn();
-        dataGridViewTextBoxColumn2 = new DataGridViewTextBoxColumn();
-        dataGridViewTextBoxColumn3 = new DataGridViewTextBoxColumn();
-        dataGridViewTextBoxColumn4 = new DataGridViewTextBoxColumn();
-        dataGridViewTextBoxColumn5 = new DataGridViewTextBoxColumn();
-        dataGridViewTextBoxColumn6 = new DataGridViewTextBoxColumn();
-        dataGridViewTextBoxColumn7 = new DataGridViewTextBoxColumn();
-        dataGridViewTextBoxColumn8 = new DataGridViewTextBoxColumn();
-        dataGridViewTextBoxColumn9 = new DataGridViewTextBoxColumn();
         pnlActions = new Panel();
         flpActions = new FlowLayoutPanel();
-        this.btnDong = new Button();
-        this.btnXoa = new Button();
-        this.btnSua = new Button();
-        this.btnThem = new Button();
+        btnDong = new Button();
+        btnXoa = new Button();
+        btnSua = new Button();
+        btnThem = new Button();
         lblRecordCount = new Label();
+        prgExcel = new ProgressBar();
         tlpRoot.SuspendLayout();
         grpFilters.SuspendLayout();
         flpFilters.SuspendLayout();
@@ -132,8 +128,10 @@ partial class FrmSinhVien
         flpFilters.Controls.Add(lblLop);
         flpFilters.Controls.Add(cboLop);
         flpFilters.Controls.Add(txtTimKiem);
-        flpFilters.Controls.Add(this.btnTimKiem);
-        flpFilters.Controls.Add(this.btnXuatExcel);
+        flpFilters.Controls.Add(btnTimKiem);
+        flpFilters.Controls.Add(btnXuatExcel);
+        flpFilters.Controls.Add(btnNhapExcel);
+        flpFilters.Controls.Add(btnTaiMau);
         flpFilters.Dock = DockStyle.Fill;
         flpFilters.Location = new Point(14, 33);
         flpFilters.Name = "flpFilters";
@@ -198,28 +196,49 @@ partial class FrmSinhVien
         // 
         // btnTimKiem
         // 
-        this.btnTimKiem.BackColor = Color.FromArgb(23, 101, 183);
-        this.btnTimKiem.FlatAppearance.BorderColor = Color.FromArgb(17, 82, 151);
-        this.btnTimKiem.FlatStyle = FlatStyle.Flat;
-        this.btnTimKiem.ForeColor = Color.White;
-        this.btnTimKiem.Location = new Point(626, 3);
-        this.btnTimKiem.Margin = new Padding(0, 0, 8, 0);
-        this.btnTimKiem.Name = "btnTimKiem";
-        this.btnTimKiem.Size = new Size(88, 34);
-        this.btnTimKiem.TabIndex = 5;
-        this.btnTimKiem.Text = "⌕  Tìm";
-        this.btnTimKiem.UseVisualStyleBackColor = false;
+        btnTimKiem.BackColor = Color.FromArgb(23, 101, 183);
+        btnTimKiem.FlatAppearance.BorderColor = Color.FromArgb(17, 82, 151);
+        btnTimKiem.FlatStyle = FlatStyle.Flat;
+        btnTimKiem.ForeColor = Color.White;
+        btnTimKiem.Location = new Point(626, 3);
+        btnTimKiem.Margin = new Padding(0, 0, 8, 0);
+        btnTimKiem.Name = "btnTimKiem";
+        btnTimKiem.Size = new Size(88, 34);
+        btnTimKiem.TabIndex = 5;
+        btnTimKiem.Text = "⌕  Tìm";
+        btnTimKiem.UseVisualStyleBackColor = false;
         // 
         // btnXuatExcel
         // 
-        this.btnXuatExcel.FlatAppearance.BorderColor = Color.FromArgb(169, 175, 184);
-        this.btnXuatExcel.FlatStyle = FlatStyle.Flat;
-        this.btnXuatExcel.Location = new Point(722, 3);
-        this.btnXuatExcel.Margin = new Padding(0);
-        this.btnXuatExcel.Name = "btnXuatExcel";
-        this.btnXuatExcel.Size = new Size(96, 34);
-        this.btnXuatExcel.TabIndex = 6;
-        this.btnXuatExcel.Text = "Xuất Excel";
+        btnXuatExcel.FlatAppearance.BorderColor = Color.FromArgb(169, 175, 184);
+        btnXuatExcel.FlatStyle = FlatStyle.Flat;
+        btnXuatExcel.Location = new Point(722, 3);
+        btnXuatExcel.Margin = new Padding(0);
+        btnXuatExcel.Name = "btnXuatExcel";
+        btnXuatExcel.Size = new Size(96, 34);
+        btnXuatExcel.TabIndex = 6;
+        btnXuatExcel.Text = "Xuất Excel";
+        // 
+        // btnNhapExcel
+        // 
+        btnNhapExcel.FlatStyle = FlatStyle.Flat;
+        btnNhapExcel.Location = new Point(826, 3);
+        btnNhapExcel.Margin = new Padding(8, 0, 0, 0);
+        btnNhapExcel.Name = "btnNhapExcel";
+        btnNhapExcel.Size = new Size(104, 34);
+        btnNhapExcel.TabIndex = 7;
+        btnNhapExcel.Text = "Nhập Excel";
+        btnNhapExcel.Click += ImportStudents_Click;
+        // 
+        // btnTaiMau
+        // 
+        btnTaiMau.FlatStyle = FlatStyle.Flat;
+        btnTaiMau.Location = new Point(938, 3);
+        btnTaiMau.Margin = new Padding(8, 0, 0, 0);
+        btnTaiMau.Name = "btnTaiMau";
+        btnTaiMau.Size = new Size(112, 34);
+        btnTaiMau.TabIndex = 8;
+        btnTaiMau.Text = "Tải mẫu Excel";
         // 
         // dgvSinhVien
         // 
@@ -267,67 +286,30 @@ partial class FrmSinhVien
         dgvSinhVien.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
         dgvSinhVien.Size = new Size(1060, 386);
         dgvSinhVien.TabIndex = 2;
-        dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
-        dataGridViewTextBoxColumn1.HeaderText = "Mã SV";
-        dataGridViewTextBoxColumn1.DataPropertyName = "MaSv";
-        dataGridViewTextBoxColumn1.FillWeight = 11F;
-        dataGridViewTextBoxColumn1.MinimumWidth = 95;
-        dataGridViewTextBoxColumn1.SortMode = DataGridViewColumnSortMode.NotSortable;
-        dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
-        dataGridViewTextBoxColumn2.HeaderText = "Họ và tên";
-        dataGridViewTextBoxColumn2.DataPropertyName = "HoTen";
-        dataGridViewTextBoxColumn2.FillWeight = 17F;
-        dataGridViewTextBoxColumn2.MinimumWidth = 145;
-        dataGridViewTextBoxColumn2.SortMode = DataGridViewColumnSortMode.NotSortable;
-        dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
-        dataGridViewTextBoxColumn3.HeaderText = "Ngày sinh";
-        dataGridViewTextBoxColumn3.DataPropertyName = "NgaySinh";
-        dataGridViewTextBoxColumn3.FillWeight = 11F;
-        dataGridViewTextBoxColumn3.MinimumWidth = 100;
-        dataGridViewTextBoxColumn3.SortMode = DataGridViewColumnSortMode.NotSortable;
-        dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
-        dataGridViewTextBoxColumn4.HeaderText = "Giới tính";
-        dataGridViewTextBoxColumn4.DataPropertyName = "GioiTinh";
-        dataGridViewTextBoxColumn4.FillWeight = 8F;
-        dataGridViewTextBoxColumn4.MinimumWidth = 100;
-        dataGridViewTextBoxColumn4.SortMode = DataGridViewColumnSortMode.NotSortable;
-        dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
-        dataGridViewTextBoxColumn5.HeaderText = "CCCD";
-        dataGridViewTextBoxColumn5.DataPropertyName = "Cccd";
-        dataGridViewTextBoxColumn5.FillWeight = 13F;
-        dataGridViewTextBoxColumn5.MinimumWidth = 125;
-        dataGridViewTextBoxColumn5.SortMode = DataGridViewColumnSortMode.NotSortable;
-        dataGridViewTextBoxColumn6.Name = "dataGridViewTextBoxColumn6";
-        dataGridViewTextBoxColumn6.HeaderText = "Số điện thoại";
-        dataGridViewTextBoxColumn6.DataPropertyName = "SoDienThoai";
-        dataGridViewTextBoxColumn6.FillWeight = 12F;
-        dataGridViewTextBoxColumn6.MinimumWidth = 120;
-        dataGridViewTextBoxColumn6.SortMode = DataGridViewColumnSortMode.NotSortable;
-        dataGridViewTextBoxColumn7.Name = "dataGridViewTextBoxColumn7";
-        dataGridViewTextBoxColumn7.HeaderText = "Lớp";
-        dataGridViewTextBoxColumn7.DataPropertyName = "Lop";
-        dataGridViewTextBoxColumn7.FillWeight = 11F;
-        dataGridViewTextBoxColumn7.MinimumWidth = 105;
-        dataGridViewTextBoxColumn7.SortMode = DataGridViewColumnSortMode.NotSortable;
-        dataGridViewTextBoxColumn8.Name = "dataGridViewTextBoxColumn8";
-        dataGridViewTextBoxColumn8.HeaderText = "Khoa";
-        dataGridViewTextBoxColumn8.DataPropertyName = "Khoa";
-        dataGridViewTextBoxColumn8.FillWeight = 17F;
-        dataGridViewTextBoxColumn8.MinimumWidth = 155;
-        dataGridViewTextBoxColumn8.SortMode = DataGridViewColumnSortMode.NotSortable;
-        dataGridViewTextBoxColumn9.Name = "dataGridViewTextBoxColumn9";
-        dataGridViewTextBoxColumn9.HeaderText = "Trạng thái";
-        dataGridViewTextBoxColumn9.DataPropertyName = "TrangThai";
-        dataGridViewTextBoxColumn9.FillWeight = 13F;
-        dataGridViewTextBoxColumn9.MinimumWidth = 125;
-        dataGridViewTextBoxColumn9.SortMode = DataGridViewColumnSortMode.NotSortable;
-        dgvSinhVien.AutoGenerateColumns = false;
+        dataGridViewTextBoxColumn1 = new DataGridViewTextBoxColumn();
+        dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1"; dataGridViewTextBoxColumn1.DataPropertyName = "MaSv"; dataGridViewTextBoxColumn1.HeaderText = "Mã SV"; dataGridViewTextBoxColumn1.FillWeight = 11F; dataGridViewTextBoxColumn1.MinimumWidth = 95; dataGridViewTextBoxColumn1.SortMode = DataGridViewColumnSortMode.NotSortable;
+        dataGridViewTextBoxColumn2 = new DataGridViewTextBoxColumn();
+        dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2"; dataGridViewTextBoxColumn2.DataPropertyName = "HoTen"; dataGridViewTextBoxColumn2.HeaderText = "Họ và tên"; dataGridViewTextBoxColumn2.FillWeight = 17F; dataGridViewTextBoxColumn2.MinimumWidth = 145; dataGridViewTextBoxColumn2.SortMode = DataGridViewColumnSortMode.NotSortable;
+        dataGridViewTextBoxColumn3 = new DataGridViewTextBoxColumn();
+        dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3"; dataGridViewTextBoxColumn3.DataPropertyName = "NgaySinh"; dataGridViewTextBoxColumn3.HeaderText = "Ngày sinh"; dataGridViewTextBoxColumn3.FillWeight = 11F; dataGridViewTextBoxColumn3.MinimumWidth = 100; dataGridViewTextBoxColumn3.SortMode = DataGridViewColumnSortMode.NotSortable;
+        dataGridViewTextBoxColumn4 = new DataGridViewTextBoxColumn();
+        dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4"; dataGridViewTextBoxColumn4.DataPropertyName = "GioiTinh"; dataGridViewTextBoxColumn4.HeaderText = "Giới tính"; dataGridViewTextBoxColumn4.FillWeight = 8F; dataGridViewTextBoxColumn4.MinimumWidth = 100; dataGridViewTextBoxColumn4.SortMode = DataGridViewColumnSortMode.NotSortable;
+        dataGridViewTextBoxColumn5 = new DataGridViewTextBoxColumn();
+        dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5"; dataGridViewTextBoxColumn5.DataPropertyName = "Cccd"; dataGridViewTextBoxColumn5.HeaderText = "CCCD"; dataGridViewTextBoxColumn5.FillWeight = 13F; dataGridViewTextBoxColumn5.MinimumWidth = 125; dataGridViewTextBoxColumn5.SortMode = DataGridViewColumnSortMode.NotSortable;
+        dataGridViewTextBoxColumn6 = new DataGridViewTextBoxColumn();
+        dataGridViewTextBoxColumn6.Name = "dataGridViewTextBoxColumn6"; dataGridViewTextBoxColumn6.DataPropertyName = "SoDienThoai"; dataGridViewTextBoxColumn6.HeaderText = "Số điện thoại"; dataGridViewTextBoxColumn6.FillWeight = 12F; dataGridViewTextBoxColumn6.MinimumWidth = 120; dataGridViewTextBoxColumn6.SortMode = DataGridViewColumnSortMode.NotSortable;
+        dataGridViewTextBoxColumn7 = new DataGridViewTextBoxColumn();
+        dataGridViewTextBoxColumn7.Name = "dataGridViewTextBoxColumn7"; dataGridViewTextBoxColumn7.DataPropertyName = "Lop"; dataGridViewTextBoxColumn7.HeaderText = "Lớp"; dataGridViewTextBoxColumn7.FillWeight = 11F; dataGridViewTextBoxColumn7.MinimumWidth = 105; dataGridViewTextBoxColumn7.SortMode = DataGridViewColumnSortMode.NotSortable;
+        dataGridViewTextBoxColumn8 = new DataGridViewTextBoxColumn();
+        dataGridViewTextBoxColumn8.Name = "dataGridViewTextBoxColumn8"; dataGridViewTextBoxColumn8.DataPropertyName = "Khoa"; dataGridViewTextBoxColumn8.HeaderText = "Khoa"; dataGridViewTextBoxColumn8.FillWeight = 17F; dataGridViewTextBoxColumn8.MinimumWidth = 155; dataGridViewTextBoxColumn8.SortMode = DataGridViewColumnSortMode.NotSortable;
+        dataGridViewTextBoxColumn9 = new DataGridViewTextBoxColumn();
+        dataGridViewTextBoxColumn9.Name = "dataGridViewTextBoxColumn9"; dataGridViewTextBoxColumn9.DataPropertyName = "TrangThai"; dataGridViewTextBoxColumn9.HeaderText = "Trạng thái"; dataGridViewTextBoxColumn9.FillWeight = 13F; dataGridViewTextBoxColumn9.MinimumWidth = 125; dataGridViewTextBoxColumn9.SortMode = DataGridViewColumnSortMode.NotSortable;
         dgvSinhVien.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn1, dataGridViewTextBoxColumn2, dataGridViewTextBoxColumn3, dataGridViewTextBoxColumn4, dataGridViewTextBoxColumn5, dataGridViewTextBoxColumn6, dataGridViewTextBoxColumn7, dataGridViewTextBoxColumn8, dataGridViewTextBoxColumn9 });
-
         dgvSinhVien.CellFormatting += FormatStudentStatusCell;
         // 
         // pnlActions
         // 
+        pnlActions.Controls.Add(prgExcel);
         pnlActions.Controls.Add(flpActions);
         pnlActions.Controls.Add(lblRecordCount);
         pnlActions.Dock = DockStyle.Fill;
@@ -341,10 +323,10 @@ partial class FrmSinhVien
         // flpActions
         // 
         flpActions.AutoSize = true;
-        flpActions.Controls.Add(this.btnDong);
-        flpActions.Controls.Add(this.btnXoa);
-        flpActions.Controls.Add(this.btnSua);
-        flpActions.Controls.Add(this.btnThem);
+        flpActions.Controls.Add(btnDong);
+        flpActions.Controls.Add(btnXoa);
+        flpActions.Controls.Add(btnSua);
+        flpActions.Controls.Add(btnThem);
         flpActions.Dock = DockStyle.Right;
         flpActions.FlowDirection = FlowDirection.RightToLeft;
         flpActions.Location = new Point(656, 12);
@@ -355,52 +337,52 @@ partial class FrmSinhVien
         // 
         // btnDong
         // 
-        this.btnDong.FlatAppearance.BorderColor = Color.FromArgb(169, 175, 184);
-        this.btnDong.FlatStyle = FlatStyle.Flat;
-        this.btnDong.Location = new Point(320, 0);
-        this.btnDong.Margin = new Padding(9, 0, 0, 0);
-        this.btnDong.Name = "btnDong";
-        this.btnDong.Size = new Size(84, 36);
-        this.btnDong.TabIndex = 0;
-        this.btnDong.Text = "Đóng";
-        this.btnDong.Click += this.Close_Click;
+        btnDong.FlatAppearance.BorderColor = Color.FromArgb(169, 175, 184);
+        btnDong.FlatStyle = FlatStyle.Flat;
+        btnDong.Location = new Point(320, 0);
+        btnDong.Margin = new Padding(9, 0, 0, 0);
+        btnDong.Name = "btnDong";
+        btnDong.Size = new Size(84, 36);
+        btnDong.TabIndex = 0;
+        btnDong.Text = "Đóng";
+        btnDong.Click += Close_Click;
         // 
         // btnXoa
         // 
-        this.btnXoa.FlatAppearance.BorderColor = Color.FromArgb(163, 51, 60);
-        this.btnXoa.FlatStyle = FlatStyle.Flat;
-        this.btnXoa.ForeColor = Color.FromArgb(163, 51, 60);
-        this.btnXoa.Location = new Point(221, 0);
-        this.btnXoa.Margin = new Padding(9, 0, 0, 0);
-        this.btnXoa.Name = "btnXoa";
-        this.btnXoa.Size = new Size(90, 36);
-        this.btnXoa.TabIndex = 2;
-        this.btnXoa.Text = "Xóa";
+        btnXoa.FlatAppearance.BorderColor = Color.FromArgb(163, 51, 60);
+        btnXoa.FlatStyle = FlatStyle.Flat;
+        btnXoa.ForeColor = Color.FromArgb(163, 51, 60);
+        btnXoa.Location = new Point(221, 0);
+        btnXoa.Margin = new Padding(9, 0, 0, 0);
+        btnXoa.Name = "btnXoa";
+        btnXoa.Size = new Size(90, 36);
+        btnXoa.TabIndex = 2;
+        btnXoa.Text = "Xóa";
         // 
         // btnSua
         // 
-        this.btnSua.FlatAppearance.BorderColor = Color.FromArgb(169, 175, 184);
-        this.btnSua.FlatStyle = FlatStyle.Flat;
-        this.btnSua.Location = new Point(122, 0);
-        this.btnSua.Margin = new Padding(9, 0, 0, 0);
-        this.btnSua.Name = "btnSua";
-        this.btnSua.Size = new Size(90, 36);
-        this.btnSua.TabIndex = 3;
-        this.btnSua.Text = "✎  Sửa";
+        btnSua.FlatAppearance.BorderColor = Color.FromArgb(169, 175, 184);
+        btnSua.FlatStyle = FlatStyle.Flat;
+        btnSua.Location = new Point(122, 0);
+        btnSua.Margin = new Padding(9, 0, 0, 0);
+        btnSua.Name = "btnSua";
+        btnSua.Size = new Size(90, 36);
+        btnSua.TabIndex = 3;
+        btnSua.Text = "✎  Sửa";
         // 
         // btnThem
         // 
-        this.btnThem.BackColor = Color.FromArgb(23, 101, 183);
-        this.btnThem.FlatAppearance.BorderColor = Color.FromArgb(17, 82, 151);
-        this.btnThem.FlatStyle = FlatStyle.Flat;
-        this.btnThem.ForeColor = Color.White;
-        this.btnThem.Location = new Point(9, 0);
-        this.btnThem.Margin = new Padding(9, 0, 0, 0);
-        this.btnThem.Name = "btnThem";
-        this.btnThem.Size = new Size(104, 36);
-        this.btnThem.TabIndex = 4;
-        this.btnThem.Text = "＋  Thêm";
-        this.btnThem.UseVisualStyleBackColor = false;
+        btnThem.BackColor = Color.FromArgb(23, 101, 183);
+        btnThem.FlatAppearance.BorderColor = Color.FromArgb(17, 82, 151);
+        btnThem.FlatStyle = FlatStyle.Flat;
+        btnThem.ForeColor = Color.White;
+        btnThem.Location = new Point(9, 0);
+        btnThem.Margin = new Padding(9, 0, 0, 0);
+        btnThem.Name = "btnThem";
+        btnThem.Size = new Size(104, 36);
+        btnThem.TabIndex = 4;
+        btnThem.Text = "＋  Thêm";
+        btnThem.UseVisualStyleBackColor = false;
         // 
         // lblRecordCount
         // 
@@ -412,6 +394,16 @@ partial class FrmSinhVien
         lblRecordCount.TabIndex = 1;
         lblRecordCount.Text = "Đang tải...";
         lblRecordCount.TextAlign = ContentAlignment.MiddleLeft;
+        // 
+        // prgExcel
+        // 
+        prgExcel.Dock = DockStyle.Fill;
+        prgExcel.Location = new Point(160, 12);
+        prgExcel.MarqueeAnimationSpeed = 25;
+        prgExcel.Name = "prgExcel";
+        prgExcel.Size = new Size(496, 44);
+        prgExcel.TabIndex = 2;
+        prgExcel.Visible = false;
         // 
         // FrmSinhVien
         // 
@@ -434,3 +426,6 @@ partial class FrmSinhVien
         ResumeLayout(false);
     }
 }
+
+
+

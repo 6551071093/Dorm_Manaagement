@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using QuanLyKyTucXa.Infrastructure;
 using QuanLyKyTucXa.Infrastructure.Services;
 
@@ -16,6 +16,10 @@ public partial class StudentEditDialog : Form
     public StudentEditDialog()
     {
         InitializeComponent();
+        components ??= new System.ComponentModel.Container();
+        errorProvider1 ??= new ErrorProvider(components);
+        errorProvider1.ContainerControl = this;
+        errorProvider1.BlinkStyle = ErrorBlinkStyle.NeverBlink;
     }
 
     public StudentEditDialog(SinhVien value, bool isNew, SinhVienService service) : this()
@@ -47,6 +51,7 @@ public partial class StudentEditDialog : Form
         _saving = true;
         btnLuu.Enabled = btnHuy.Enabled = tlpFields.Enabled = false;
         lblError.Text = "";
+        errorProvider1.Clear();
         UseWaitCursor = true;
         var succeeded = false;
         try
@@ -65,7 +70,7 @@ public partial class StudentEditDialog : Form
             SavedId = _value.MaSv;
             succeeded = true;
         }
-        catch (InvalidOperationException ex) { lblError.Text = ex.Message; }
+        catch (InvalidOperationException ex) { ShowFieldError(ex.Message); }
         catch (DbUpdateException) { lblError.Text = "Không lưu được: dữ liệu trùng, đã thay đổi hoặc còn liên kết. Hãy kiểm tra và thử lại."; }
         catch (Exception) { lblError.Text = "Không kết nối/lưu được database. Kiểm tra kết nối rồi thử lại."; }
         finally
@@ -77,8 +82,27 @@ public partial class StudentEditDialog : Form
         if (succeeded) { DialogResult = DialogResult.OK; Close(); }
     }
 
+    private void ShowFieldError(string message)
+    {
+        lblError.Text = message;
+        Control target =
+            message.Contains("CCCD") ? txtCccd :
+            message.Contains("điện thoại") ? txtSoDienThoai :
+            message.Contains("Ngày sinh") ? dtpNgaySinh :
+            message.Contains("Email") ? txtEmail :
+            message.Contains("Họ tên") ? txtHoTen :
+            message.Contains("Khoa") ? txtKhoa :
+            message.Contains("Lớp") ? txtLop :
+            message.Contains("Quê quán") ? txtQueQuan :
+            message.Contains("giới tính") ? cboGioiTinh : txtMaSv;
+        errorProvider1.SetError(target, message);
+        if (message.Contains("CCCD") && message.Contains("điện thoại"))
+            errorProvider1.SetError(txtSoDienThoai, message);
+        pnlScroll.ScrollControlIntoView(target);
+    }
     private void Editor_FormClosing(object? sender, FormClosingEventArgs e)
     {
         if (_saving) e.Cancel = true;
     }
 }
+

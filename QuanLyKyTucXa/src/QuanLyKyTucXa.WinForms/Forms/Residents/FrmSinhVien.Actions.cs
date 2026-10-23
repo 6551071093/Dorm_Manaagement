@@ -1,4 +1,4 @@
-using QuanLyKyTucXa.Infrastructure;
+﻿using QuanLyKyTucXa.Infrastructure;
 using QuanLyKyTucXa.Infrastructure.Data.Context;
 using QuanLyKyTucXa.Infrastructure.Services;
 
@@ -7,7 +7,7 @@ namespace QuanLyKyTucXa.WinForms.Forms.Residents;
 public partial class FrmSinhVien
 {
     private bool _studentActionBusy;
-    private SinhVienService StudentService => new(() => AppDbContextFactory.Create(_connectionString));
+    private SinhVienService StudentService => new(() => AppDbContextFactory.Create(_connectionString), _session);
 
     private string? SelectedStudentId()
     {
@@ -53,11 +53,11 @@ public partial class FrmSinhVien
     }
     private async Task RunStudentActionAsync(Func<Task> action)
     {
-        if (_studentActionBusy || _loadingData) return;
+        if (_studentActionBusy || _loadingData || _excelBusy) return;
         _studentActionBusy = true;
         btnThem.Enabled = btnSua.Enabled = btnXoa.Enabled = false;
         try { await action(); }
-        catch (InvalidOperationException ex) { MessageBox.Show(this, ex.Message, "Sinh viên", MessageBoxButtons.OK, MessageBoxIcon.Warning); }
+        catch (Exception ex) when (ex is InvalidOperationException or UnauthorizedAccessException) { MessageBox.Show(this, ex.Message, "Sinh viên", MessageBoxButtons.OK, MessageBoxIcon.Warning); }
         catch (Exception) { MessageBox.Show(this, "Không thể thực hiện thao tác. Kiểm tra kết nối hoặc làm mới dữ liệu rồi thử lại.", "Sinh viên", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         finally
         {
@@ -66,3 +66,4 @@ public partial class FrmSinhVien
         }
     }
 }
+

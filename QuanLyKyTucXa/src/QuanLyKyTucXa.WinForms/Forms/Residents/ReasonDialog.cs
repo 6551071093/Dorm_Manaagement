@@ -1,9 +1,16 @@
-using System.Windows.Forms;
+﻿namespace QuanLyKyTucXa.WinForms.Forms.Residents;
 
-namespace QuanLyKyTucXa.WinForms.Forms.Residents;
-
-internal sealed partial class ReasonDialog : Form
+public sealed partial class ReasonDialog : Form
 {
     public string Reason => txtReason.Text.Trim();
-    public ReasonDialog() => InitializeComponent();
+    public ReasonDialog()
+    {
+        InitializeComponent();
+        txtReason.MaxLength = 200;
+        btnConfirm.DialogResult = DialogResult.None;
+        btnConfirm.Click += (_, _) => {
+            if (Reason.Length == 0) { MessageBox.Show(this, "Vui lòng nhập lý do từ chối."); txtReason.Focus(); return; }
+            DialogResult = DialogResult.OK;
+        };
+    }
 }

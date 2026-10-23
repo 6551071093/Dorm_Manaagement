@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 namespace QuanLyKyTucXa.WinForms.Forms.Residents;
 
 partial class ReasonDialog
