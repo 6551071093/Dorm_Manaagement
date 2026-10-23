@@ -6,14 +6,14 @@ namespace QuanLyKyTucXa.WinForms;
 
 internal sealed class GradientPanel : Panel
 {
-    private int _occupancyPercent;
+    private decimal? _occupancyPercent;
 
     [System.ComponentModel.Browsable(false)]
     [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-    public int OccupancyPercent
+    public decimal? OccupancyPercent
     {
         get => _occupancyPercent;
-        set { _occupancyPercent = Math.Clamp(value, 0, 100); Invalidate(); }
+        set { _occupancyPercent = value.HasValue ? Math.Clamp(value.Value, 0m, 100m) : null; Invalidate(); }
     }
 
     public GradientPanel()
@@ -61,16 +61,17 @@ internal sealed class GradientPanel : Panel
             EndCap = LineCap.Round
         };
         graphics.DrawArc(track, bounds, -90, 359);
-        if (_occupancyPercent > 0)
-            graphics.DrawArc(progress, bounds, -90, 360F * _occupancyPercent / 100F);
+        if (_occupancyPercent is > 0)
+            graphics.DrawArc(progress, bounds, -90, 360F * (float)_occupancyPercent.Value / 100F);
 
         using var large = new Font("Segoe UI", 17F * scale, FontStyle.Bold);
         using var small = new Font("Segoe UI", 7F * scale, FontStyle.Regular);
         using var white = new SolidBrush(Color.White);
         using var format = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
-        graphics.DrawString($"{_occupancyPercent}%", large, white,
+        var percentText = _occupancyPercent.HasValue ? _occupancyPercent.Value.ToString("0.##", System.Globalization.CultureInfo.GetCultureInfo("vi-VN")) + "%" : "—";
+        graphics.DrawString(percentText, large, white,
             new Rectangle(left, top + (int)Math.Round(38 * scale), size, (int)Math.Round(25 * scale)), format);
-        graphics.DrawString("đã lấp đầy", small, white,
+        graphics.DrawString(_occupancyPercent.HasValue ? "đã lấp đầy" : "chưa có dữ liệu", small, white,
             new Rectangle(left, top + (int)Math.Round(63 * scale), size, (int)Math.Round(15 * scale)), format);
         graphics.SmoothingMode = oldSmoothing;
     }

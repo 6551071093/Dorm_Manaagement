@@ -1,3 +1,5 @@
+﻿using QuanLyKyTucXa.Infrastructure.Security;
+using QuanLyKyTucXa.WinForms.Forms.Users;
 using System.Globalization;
 using System.Windows.Forms;
 using QuanLyKyTucXa.WinForms.Forms.Residents;
@@ -22,7 +24,7 @@ public partial class FrmMain
         _classicReady = true;
     }
 
-    private void Main_Load(object? sender, EventArgs e)
+    private async void Main_Load(object? sender, EventArgs e)
     {
         ShowHome();
     }
@@ -49,6 +51,9 @@ public partial class FrmMain
 
     private async void Refresh_Click(object? sender, EventArgs e)
     {
+        if (!await EnsureSessionAsync()) return;
+        if (_activeChild is FrmNguoiDung users) { await users.RefreshViewAsync(); return; }
+        if (_activeChild is FrmCaNhan personal) { await personal.RefreshViewAsync(); return; }
         if (tabWorkspace.SelectedTab == tabDashboard)
         {
             await RefreshDashboardAsync();
@@ -64,13 +69,21 @@ public partial class FrmMain
             await students.RefreshViewAsync();
             return;
         }
+        if (_activeChild is FrmDangKyKtx registration) { await registration.RefreshViewAsync(); return; }
+        if (_activeChild is FrmTraCuuDangKy lookup) { await lookup.RefreshViewAsync(); return; }
+        if (_activeChild is FrmDuyetDon approvals) { await approvals.RefreshViewAsync(); return; }
         var refresh = FindControls<Button>(_activeChild).FirstOrDefault(b => b.Name == "btnLamMoi");
         if (refresh is not null) refresh.PerformClick();
         else SetStatus("Sẵn sàng");
     }
 
-    private void Export_Click(object? sender, EventArgs e)
+    private async void Export_Click(object? sender, EventArgs e)
     {
+        if (_activeChild is FrmSinhVien students)
+        {
+            await students.ExportStudentsAsync();
+            return;
+        }
         var grid = FindControls<DataGridView>(_activeChild).FirstOrDefault(g => g.Visible);
         if (grid is null)
         {
@@ -112,7 +125,7 @@ public partial class FrmMain
     {
         if (!_classicReady) return;
         var page = tabWorkspace.SelectedTab;
-        if (page == tabDashboard) { _activeChild = null; await RefreshDashboardAsync(); return; }
+        if (page == tabDashboard) { if (_session?.IsStudent == true) { ShowPersonal(); return; } _activeChild = null; await RefreshDashboardAsync(); return; }
         if (page == tabStudents && page.Controls.Count == 0) { ShowStudents(); return; }
         if (page == tabRooms && page.Controls.Count == 0) { ShowRooms(); return; }
         _activeChild = page?.Controls.OfType<Form>().FirstOrDefault();
@@ -133,3 +146,5 @@ public partial class FrmMain
         tabWorkspace.SelectedTab = tabDashboard;
     }
 }
+
+

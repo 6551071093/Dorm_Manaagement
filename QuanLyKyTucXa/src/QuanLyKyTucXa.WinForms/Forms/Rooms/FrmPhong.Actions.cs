@@ -1,4 +1,4 @@
-using QuanLyKyTucXa.Infrastructure;
+﻿using QuanLyKyTucXa.Infrastructure;
 using QuanLyKyTucXa.Infrastructure.Data.Context;
 using QuanLyKyTucXa.Infrastructure.Services;
 
@@ -7,7 +7,7 @@ namespace QuanLyKyTucXa.WinForms.Forms.Rooms;
 public partial class FrmPhong
 {
     private bool _roomActionBusy;
-    private PhongGiuongService RoomService => new(() => AppDbContextFactory.Create(_connectionString));
+    private PhongGiuongService RoomService => new(() => AppDbContextFactory.Create(_connectionString), _session);
     private string? SelectedRoomId()
     {
         if (dgvPhong.SelectedRows.Count > 0)
@@ -58,7 +58,7 @@ public partial class FrmPhong
         _roomActionBusy = true;
         btnThem.Enabled = btnSua.Enabled = btnXoa.Enabled = false;
         try { await action(); }
-        catch (InvalidOperationException ex) { MessageBox.Show(this, ex.Message, "Phòng", MessageBoxButtons.OK, MessageBoxIcon.Warning); }
+        catch (Exception ex) when (ex is InvalidOperationException or UnauthorizedAccessException) { MessageBox.Show(this, ex.Message, "Phòng", MessageBoxButtons.OK, MessageBoxIcon.Warning); }
         catch (Exception) { MessageBox.Show(this, "Không thể thực hiện thao tác. Kiểm tra kết nối hoặc làm mới dữ liệu rồi thử lại.", "Phòng", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         finally
         {

@@ -1,3 +1,4 @@
+﻿using QuanLyKyTucXa.Infrastructure.Security;
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -32,9 +33,11 @@ public partial class FrmMain : Form
     private ToolTip? _dashboardStatsToolTip;
     private Label? _utilityTitle;
 
-    public FrmMain(string connectionString)
+    public FrmMain(string connectionString) : this(connectionString, null) { }
+    public FrmMain(string connectionString, AuthSession? session)
     {
         _connectionString = connectionString;
+        _session = session;
         InitializeComponent();
         InitializeDashboardComponents();
         var dayName = CultureInfo.GetCultureInfo("vi-VN").DateTimeFormat.GetDayName(DateTime.Today.DayOfWeek);
@@ -42,6 +45,7 @@ public partial class FrmMain : Form
         ConfigureRoundedSearch();
         BuildReferenceLowerLayout();
         ConfigureClassicShell();
+        ConfigureAuthenticationUi();
         btnNavHome.Click += (_, _) => ShowHome();
         btnNavStudents.Click += (_, _) => ShowStudents();
         btnNavRooms.Click += (_, _) => ShowRooms();
@@ -69,6 +73,7 @@ public partial class FrmMain : Form
             }
         };
         Load += Main_Load;
+        Activated += async (_, _) => { if (Visible && _session?.IsActive == true) await EnsureSessionAsync(); };
     }
 
     private void PositionHeaderActions()
@@ -282,6 +287,8 @@ public partial class FrmMain : Form
 
     private async void ShowHome()
     {
+        if (_session?.IsStudent == true) { ShowPersonal(); return; }
+        if (!RequireUi(AppPermission.Staff)) return;
         tabWorkspace.SelectedTab = tabDashboard;
         _activeChild = null;
         pnlHome.Visible = true;
@@ -295,7 +302,7 @@ public partial class FrmMain : Form
 
     private async Task RefreshDashboardAsync()
     {
-        if (_refreshingDashboard || IsDisposed || Disposing) return;
+        if (_session?.IsStaff != true || !_session.IsActive || _refreshingDashboard || IsDisposed || Disposing) return;
         _refreshingDashboard = true;
         var now = DateTime.Now;
         var vi = CultureInfo.GetCultureInfo("vi-VN");
@@ -303,6 +310,7 @@ public partial class FrmMain : Form
         try
         {
             await using var db = AppDbContextFactory.Create(_connectionString);
+            await AuthPolicy.RequireAsync(db, _session, AppPermission.Staff);
             // Match sp_ThongKeDashboard: residents currently staying and beds actually in use.
             var allStudents = await db.SinhViens.CountAsync();
             var students = await db.SinhViens.CountAsync(s => s.TrangThai == "Đang ở");
@@ -481,7 +489,9 @@ public partial class FrmMain : Form
 
     private void ShowRooms()
     {
-        var roomForm = new FrmPhong(_connectionString);
+        if (_session?.IsStudent == true) { ShowPersonal(); return; }
+        if (!RequireUi(AppPermission.ManageRooms)) return;
+        var roomForm = new FrmPhong(_connectionString, _session);
         roomForm.ReturnHomeRequested += (_, _) => CloseCurrentTab();
         roomForm.RecordCountChanged += (_, _) => { if (_activeChild == roomForm) SetStatus($"Sẵn sàng - {roomForm.VisibleRoomCount} phòng"); };
         ShowChild(roomForm, "Phòng", "Quản lý phòng ở");
@@ -491,28 +501,38 @@ public partial class FrmMain : Form
 
     private void ShowRegistration()
     {
-        ShowChild(new FrmDangKyKtx(_connectionString), "Đăng ký KTX", "Tiếp nhận yêu cầu lưu trú");
+        if (!RequireUi(AppPermission.Register)) return;
+        var form = new FrmDangKyKtx(_connectionString, _session);
+        form.ReturnHomeRequested += (_, _) => CloseCurrentTab();
+        ShowChild(form, "Đăng ký KTX", "Tiếp nhận yêu cầu lưu trú");
         SelectNav(btnNavRegistration);
         SetStatus("Sẵn sàng - Đăng ký KTX");
     }
 
     private void ShowLookup()
     {
-        ShowChild(new FrmTraCuuDangKy(_connectionString), "Tra cứu đơn", "Theo dõi tình trạng đăng ký");
+        if (!RequireUi(AppPermission.ViewApplications)) return;
+        var form = new FrmTraCuuDangKy(_connectionString, _session);
+        form.ReturnHomeRequested += (_, _) => CloseCurrentTab();
+        ShowChild(form, "Tra cứu đơn", "Theo dõi tình trạng đăng ký");
         SelectNav(btnNavLookup);
         SetStatus("Sẵn sàng - Tra cứu đơn");
     }
 
     private void ShowApprovals()
     {
-        ShowChild(new FrmDuyetDon(_connectionString), "Duyệt đơn", "Xét duyệt hồ sơ sinh viên");
+        if (!RequireUi(AppPermission.ApproveApplications)) return;
+        var form = new FrmDuyetDon(_connectionString, _session);
+        form.ReturnHomeRequested += (_, _) => CloseCurrentTab();
+        ShowChild(form, "Duyệt đơn", "Xét duyệt hồ sơ sinh viên");
         SelectNav(btnNavApprovals);
         SetStatus("Sẵn sàng - Duyệt đơn");
     }
 
     private void ShowStudents()
     {
-        var studentForm = new FrmSinhVien(_connectionString);
+        if (!RequireUi(AppPermission.ManageResidents)) return;
+        var studentForm = new FrmSinhVien(_connectionString, _session);
         studentForm.ReturnHomeRequested += (_, _) => CloseCurrentTab();
         studentForm.RecordCountChanged += (_, _) =>
         {
@@ -565,6 +585,8 @@ public partial class FrmMain : Form
 
     private void ShowComingSoon(string feature)
     {
+        if (_session?.IsStudent == true && feature is "Hóa đơn" or "Sự cố") { ShowPersonal(feature); return; }
+        if (!RequireUi(AppPermission.Staff)) return;
         MessageBox.Show(this, $"Phân hệ {feature} chưa được triển khai trong project hiện tại.", feature, MessageBoxButtons.OK, MessageBoxIcon.Information);
         SetStatus($"Phân hệ {feature} chưa sẵn sàng");
     }

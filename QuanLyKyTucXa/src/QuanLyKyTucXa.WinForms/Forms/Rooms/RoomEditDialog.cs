@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using QuanLyKyTucXa.Infrastructure;
 using QuanLyKyTucXa.Infrastructure.Services;
 
@@ -16,6 +16,7 @@ public partial class RoomEditDialog : Form
     public RoomEditDialog()
     {
         InitializeComponent();
+        components ??= new System.ComponentModel.Container();
     }
 
     public RoomEditDialog(Phong value, bool isNew, List<ToaNha> towers, PhongGiuongService service)

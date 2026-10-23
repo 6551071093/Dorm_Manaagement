@@ -34,6 +34,7 @@ partial class FrmDangKyKtx
 
     private void InitializeComponent()
     {
+        components = new System.ComponentModel.Container();
         tlpRoot = new TableLayoutPanel();
         lblTitle = new Label();
         lblNotice = new Label();
