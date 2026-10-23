@@ -1,4 +1,4 @@
-﻿namespace QuanLyKyTucXa.WinForms.Forms.Residents;
+namespace QuanLyKyTucXa.WinForms.Forms.Residents;
 
 public sealed partial class ReasonDialog : Form
 {
@@ -6,6 +6,7 @@ public sealed partial class ReasonDialog : Form
     public ReasonDialog()
     {
         InitializeComponent();
+        QuanLyKyTucXa.WinForms.Helpers.DialogLayout.ConfigureFixed(this, btnConfirm, btnCancel);
         txtReason.MaxLength = 200;
         btnConfirm.DialogResult = DialogResult.None;
         btnConfirm.Click += (_, _) => {

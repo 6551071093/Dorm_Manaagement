@@ -17,7 +17,7 @@ partial class RecoveryCodeDialog
         root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 48F)); root.RowStyles.Add(new RowStyle(SizeType.Absolute, 64F));
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 60F)); root.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 38F)); root.RowStyles.Add(new RowStyle(SizeType.Absolute, 42F));
+        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 38F)); root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         title.Text = "Lưu mã khôi phục"; title.Font = new Font("Segoe UI", 20F, FontStyle.Bold); title.Dock = DockStyle.Fill;
         lblMessage.Dock = DockStyle.Fill; lblMessage.ForeColor = Color.FromArgb(23, 101, 183);
         txtCode.ReadOnly = true; txtCode.Multiline = true; txtCode.Dock = DockStyle.Fill; txtCode.Font = new Font("Consolas", 12F);
@@ -35,6 +35,7 @@ partial class RecoveryCodeDialog
         AutoScaleDimensions = new SizeF(96F, 96F); AutoScaleMode = AutoScaleMode.Dpi;
         StartPosition = FormStartPosition.CenterParent; FormBorderStyle = FormBorderStyle.FixedDialog;
         MinimizeBox = false; MaximizeBox = false; Text = "KTX Home — Mã khôi phục"; Name = "RecoveryCodeDialog";
+        QuanLyKyTucXa.WinForms.Helpers.DialogLayout.Configure(this, root, btnClose);
         FormClosing += Receipt_FormClosing;
     }
 }

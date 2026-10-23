@@ -1,4 +1,4 @@
-﻿using QuanLyKyTucXa.Infrastructure.Security;
+using QuanLyKyTucXa.Infrastructure.Security;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -17,6 +17,11 @@ public partial class FrmSinhVien : Form
         InitializeComponent();
         components ??= new System.ComponentModel.Container();
         ConfigureDatabaseEvents();
+        if (_session is not null)
+        {
+            btnXoa.Visible = AuthPolicy.Can(_session, AppPermission.DeleteResidents);
+            btnNhapExcel.Visible = btnTaiMau.Visible = AuthPolicy.Can(_session, AppPermission.ImportResidents);
+        }
     }
 
     protected override void OnLoad(EventArgs e)

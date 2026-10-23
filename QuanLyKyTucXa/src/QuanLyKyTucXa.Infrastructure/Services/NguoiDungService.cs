@@ -6,7 +6,11 @@ using QuanLyKyTucXa.Infrastructure.Security;
 
 namespace QuanLyKyTucXa.Infrastructure.Services;
 
-public sealed record UserAccountRow(int Id, string Username, string FullName, string Role, bool Enabled, DateTime? LastLogin);
+public sealed record UserAccountRow(int Id, string Username, string FullName, string Role, bool Enabled, DateTime? LastLogin)
+{
+    public int FailedAttempts { get; init; }
+    public bool LoginLocked { get; init; }
+}
 public sealed record StudentAccountChoice(string Id, string Name);
 public sealed class UserAccountEdit
 {
@@ -25,8 +29,16 @@ public sealed class NguoiDungService(Func<AppDbContext> createDb, AuthSession se
     {
         await using var db = createDb();
         await AuthPolicy.RequireAsync(db, session, AppPermission.ManageUsers);
-        return await db.NguoiDungs.AsNoTracking().OrderBy(x => x.TenDangNhap)
+        var rows = await db.NguoiDungs.AsNoTracking().OrderBy(x => x.TenDangNhap)
             .Select(x => new UserAccountRow(x.MaNguoiDung, x.TenDangNhap, x.HoTen, x.VaiTro, x.TrangThai, x.LanDangNhapCuoi)).ToListAsync();
+        await db.Database.OpenConnectionAsync();
+        await using var command = db.Database.GetDbConnection().CreateCommand();
+        command.CommandText = "SELECT MaNguoiDung, SoLanSai, BiKhoa FROM dbo.TaiKhoanDangNhap";
+        var states = new Dictionary<int, (int Count, bool Locked)>();
+        await using (var reader = await command.ExecuteReaderAsync())
+            while (await reader.ReadAsync()) states[reader.GetInt32(0)] = (reader.GetInt32(1), reader.GetBoolean(2));
+        return rows.Select(row => states.TryGetValue(row.Id, out var state)
+            ? row with { FailedAttempts = state.Count, LoginLocked = state.Locked } : row).ToList();
     }
     public async Task<UserAccountEdit> GetAsync(int id)
     {
@@ -93,6 +105,9 @@ public sealed class NguoiDungService(Func<AppDbContext> createDb, AuthSession se
         // Admin đặt lại mật khẩu sẽ thu hồi mã khôi phục cũ của tài khoản đó.
         if (value.Id is not null && passwordHash is not null)
             await db.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM dbo.TaiKhoanKhoiPhuc WHERE MaNguoiDung = {user.MaNguoiDung}");
+        // Admin mở khóa/kích hoạt sẽ xóa bộ đếm sai; lần đăng nhập tiếp theo bắt đầu từ 0.
+        if (value.Enabled)
+            await db.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM dbo.TaiKhoanDangNhap WHERE MaNguoiDung = {user.MaNguoiDung}");
         await tx.CommitAsync();
     }
 }

@@ -1,4 +1,4 @@
-﻿using QuanLyKyTucXa.Infrastructure.Security;
+using QuanLyKyTucXa.Infrastructure.Security;
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -585,6 +585,7 @@ public partial class FrmMain : Form
 
     private void ShowComingSoon(string feature)
     {
+        if (feature == "Thống kê" && !RequireUi(AppPermission.ViewReports)) return;
         if (_session?.IsStudent == true && feature is "Hóa đơn" or "Sự cố") { ShowPersonal(feature); return; }
         if (!RequireUi(AppPermission.Staff)) return;
         MessageBox.Show(this, $"Phân hệ {feature} chưa được triển khai trong project hiện tại.", feature, MessageBoxButtons.OK, MessageBoxIcon.Information);

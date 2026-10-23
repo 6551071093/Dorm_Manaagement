@@ -1,4 +1,4 @@
-﻿using QuanLyKyTucXa.Infrastructure.Security;
+using QuanLyKyTucXa.Infrastructure.Security;
 using System.Data;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
@@ -9,6 +9,8 @@ namespace QuanLyKyTucXa.Infrastructure.Services;
 
 public sealed class SinhVienService(Func<AppDbContext> createDb, AuthSession? session = null)
 {
+    public Task<AcademicCatalog> GetAcademicCatalogAsync() => new AcademicCatalogService(createDb, session).LoadAsync();
+
     public async Task<SinhVien> GetAsync(string id)
     {
         await using var db = createDb();
@@ -49,7 +51,7 @@ public sealed class SinhVienService(Func<AppDbContext> createDb, AuthSession? se
     public async Task DeleteAsync(string id)
     {
         await using var db = createDb();
-        await AuthPolicy.RequireAsync(db, session, AppPermission.ManageResidents);
+        await AuthPolicy.RequireAsync(db, session, AppPermission.DeleteResidents);
         await using var transaction = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
         var entity = await db.SinhViens.SingleOrDefaultAsync(x => x.MaSv == id)
             ?? throw new InvalidOperationException("Sinh viên không còn tồn tại.");
@@ -91,7 +93,7 @@ public sealed class SinhVienService(Func<AppDbContext> createDb, AuthSession? se
     public async Task<List<string>> GetImportErrorsAsync(IReadOnlyList<SinhVien> students)
     {
         await using var db = createDb();
-        await AuthPolicy.RequireAsync(db, session, AppPermission.ManageResidents);
+        await AuthPolicy.RequireAsync(db, session, AppPermission.ImportResidents);
         return await GetImportErrorsAsync(db, students);
     }
 
@@ -127,7 +129,7 @@ public sealed class SinhVienService(Func<AppDbContext> createDb, AuthSession? se
     public async Task<int> ImportAsync(IReadOnlyList<SinhVien> students)
     {
         await using var db = createDb();
-        await AuthPolicy.RequireAsync(db, session, AppPermission.ManageResidents);
+        await AuthPolicy.RequireAsync(db, session, AppPermission.ImportResidents);
         await using var transaction = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
         var errors = await GetImportErrorsAsync(db, students);
         if (errors.Count > 0)

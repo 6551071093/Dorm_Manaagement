@@ -1,4 +1,4 @@
-﻿using QuanLyKyTucXa.Infrastructure.Data.Context;
+using QuanLyKyTucXa.Infrastructure.Data.Context;
 using QuanLyKyTucXa.Infrastructure.Security;
 using QuanLyKyTucXa.Infrastructure.Services;
 
@@ -11,6 +11,8 @@ public partial class FrmCaNhan : Form
     public FrmCaNhan()
     {
         InitializeComponent();
+        tabs.SelectedIndexChanged += (_, _) => UpdateSectionCount();
+        foreach (var grid in new[] { gridRooms, gridBills, gridIncidents }) grid.CellFormatting += PersonalStatusFormatting;
         Load += async (_, _) => await RefreshViewAsync();
     }
     public FrmCaNhan(string connectionString, AuthSession session) : this() =>
@@ -35,7 +37,7 @@ public partial class FrmCaNhan : Form
             ConfigureGrid(gridRooms, ["Mã phòng", "Tòa", "Giường", "Bắt đầu", "Kết thúc", "Tiền phòng/tháng", "Trạng thái"]);
             ConfigureGrid(gridBills, ["Mã hóa đơn", "Tháng", "Năm", "Tổng tiền", "Đã thu", "Còn nợ", "Hạn thanh toán", "Trạng thái"]);
             ConfigureGrid(gridIncidents, ["Mã sự cố", "Phòng", "Tiêu đề", "Trạng thái", "Ngày báo"]);
-            lblMessage.Text = "Chỉ hiển thị dữ liệu gắn với tài khoản của bạn.";
+            UpdateSectionCount();
         }
         catch (Exception ex) { lblProfile.Text = ""; gridRooms.DataSource = gridBills.DataSource = gridIncidents.DataSource = null; lblMessage.Text = ex is UnauthorizedAccessException ? ex.Message : "Không tải được dữ liệu cá nhân. Kiểm tra kết nối và thử lại."; }
         finally { _busy = false; if (!IsDisposed) btnRefresh.Enabled = btnReport.Enabled = true; }

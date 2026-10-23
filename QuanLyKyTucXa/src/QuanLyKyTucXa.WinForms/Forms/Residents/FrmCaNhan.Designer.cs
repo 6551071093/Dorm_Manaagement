@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 namespace QuanLyKyTucXa.WinForms.Forms.Residents;
 partial class FrmCaNhan
 {
@@ -6,6 +6,7 @@ partial class FrmCaNhan
     private TableLayoutPanel tlpRoot = null!;
     private Label lblTitle = null!;
     private Label lblProfile = null!;
+    private GroupBox grpProfile = null!;
     private TabControl tabs = null!;
     private TabPage tabRooms = null!;
     private TabPage tabBills = null!;
@@ -22,7 +23,7 @@ partial class FrmCaNhan
     private void InitializeComponent()
     {
         components = new System.ComponentModel.Container();
-        tlpRoot = new TableLayoutPanel(); lblTitle = new Label(); lblProfile = new Label();
+        tlpRoot = new TableLayoutPanel(); lblTitle = new Label(); lblProfile = new Label(); grpProfile = new GroupBox();
         tabs = new TabControl(); tabRooms = new TabPage(); tabBills = new TabPage(); tabIncidents = new TabPage();
         gridRooms = new DataGridView(); gridBills = new DataGridView(); gridIncidents = new DataGridView();
         pnlFooter = new Panel(); lblMessage = new Label(); flpActions = new FlowLayoutPanel(); btnRefresh = new Button(); btnReport = new Button();
@@ -31,8 +32,9 @@ partial class FrmCaNhan
         tlpRoot.ColumnCount = 1; tlpRoot.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
         tlpRoot.RowCount = 4; tlpRoot.RowStyles.Add(new RowStyle(SizeType.Absolute, 58F)); tlpRoot.RowStyles.Add(new RowStyle(SizeType.Absolute, 76F));
         tlpRoot.RowStyles.Add(new RowStyle(SizeType.Percent, 100F)); tlpRoot.RowStyles.Add(new RowStyle(SizeType.Absolute, 56F));
-        tlpRoot.Controls.Add(lblTitle, 0, 0); tlpRoot.Controls.Add(lblProfile, 0, 1); tlpRoot.Controls.Add(tabs, 0, 2); tlpRoot.Controls.Add(pnlFooter, 0, 3);
+        tlpRoot.Controls.Add(lblTitle, 0, 0); tlpRoot.Controls.Add(grpProfile, 0, 1); tlpRoot.Controls.Add(tabs, 0, 2); tlpRoot.Controls.Add(pnlFooter, 0, 3);
         lblTitle.Text = "Thông tin cá nhân"; lblTitle.Dock = DockStyle.Fill; lblTitle.Font = new Font("Segoe UI", 20F, FontStyle.Bold); lblTitle.TextAlign = ContentAlignment.MiddleLeft;
+        grpProfile.Text = "Hồ sơ sinh viên"; grpProfile.Dock = DockStyle.Fill; grpProfile.Controls.Add(lblProfile);
         lblProfile.Dock = DockStyle.Fill; lblProfile.TextAlign = ContentAlignment.MiddleLeft; lblProfile.Text = "Đang tải hồ sơ...";
         tabs.Dock = DockStyle.Fill; tabs.Controls.Add(tabRooms); tabs.Controls.Add(tabBills); tabs.Controls.Add(tabIncidents);
         tabRooms.Text = "Phòng / Hợp đồng"; tabRooms.Controls.Add(gridRooms);

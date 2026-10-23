@@ -1,4 +1,4 @@
-﻿using QuanLyKyTucXa.Infrastructure.Services;
+using QuanLyKyTucXa.Infrastructure.Services;
 
 namespace QuanLyKyTucXa.WinForms.Forms.Users;
 
@@ -7,7 +7,7 @@ public partial class UserAccountEditDialog : Form
     private UserAccountEdit? _value;
     private NguoiDungService? _service;
     private bool _busy;
-    public UserAccountEditDialog() => InitializeComponent();
+    public UserAccountEditDialog() { InitializeComponent(); QuanLyKyTucXa.WinForms.Helpers.DialogLayout.Configure(this, tlpRoot, flpActions, tlpFields); }
     public UserAccountEditDialog(UserAccountEdit value, List<StudentAccountChoice> choices, NguoiDungService service) : this()
     {
         _value = value; _service = service;

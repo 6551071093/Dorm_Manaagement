@@ -11,7 +11,7 @@
 - Chức năng này dùng mã khôi phục, chưa gửi OTP qua email.
 
 ## Database First và triển khai
-Chạy database/scripts/06_AccountRecovery.sql trên database đích trước khi sử dụng chức năng mới.
+Chạy database/scripts/05_UpdateSchema_Catalog.sql trên database đích trước khi sử dụng chức năng mới.
 Script thêm bảng phụ dbo.TaiKhoanKhoiPhuc, không sửa Entities tự sinh hoặc dùng EF migrations. Truy cập bảng phụ bằng câu lệnh tham số hóa.
 Database máy hiện tại đã được cập nhật. Tài khoản Admin mới admin.bon đã được tạo riêng trên máy hiện tại; thông tin mật khẩu nằm trong file riêng ngoài project, không đưa lên Git.
 Không tạo tài khoản mặc định hoặc reset Admin tự động khi ứng dụng khởi động.
@@ -24,7 +24,7 @@ Không tạo tài khoản mặc định hoặc reset Admin tự động khi ứn
 - Infrastructure/Services/AuthService.cs và AuthService.Enrollment.cs
 - Infrastructure/Services/NguoiDungService.cs
 - WinForms/QuanLyKyTucXa.WinForms.csproj
-- database/scripts/06_AccountRecovery.sql
+- database/scripts/05_UpdateSchema_Catalog.sql
 
 Admin quản lý vai trò bằng FrmNguoiDung/UserAccountEditDialog và AuthPolicy đã tích hợp ở lượt trước. Khi giao phần Tú lên Git cần kèm cả các file nền phân quyền đó.
 

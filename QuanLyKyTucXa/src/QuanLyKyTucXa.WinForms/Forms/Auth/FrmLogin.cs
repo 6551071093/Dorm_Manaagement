@@ -7,6 +7,8 @@ public partial class FrmLogin : Form
 {
     private readonly AuthService? _service;
     private bool _busy;
+
+
     public AuthSession? Session { get; private set; }
     public FrmLogin()
     {
@@ -28,7 +30,7 @@ public partial class FrmLogin : Form
         UseWaitCursor = true;
         try { Session = await _service.LoginAsync(txtUsername.Text, txtPassword.Text); }
         catch (InvalidOperationException ex) { lblMessage.Text = ex.Message; }
-        catch (Exception) { lblMessage.Text = "Không kết nối được database. Kiểm tra SQL Server và cấu hình kết nối rồi thử lại."; }
+        catch (Exception) { lblMessage.Text = "Không kết nối được hệ thống. Vui lòng thử lại hoặc liên hệ quản trị viên."; }
         finally
         {
             _busy = false;

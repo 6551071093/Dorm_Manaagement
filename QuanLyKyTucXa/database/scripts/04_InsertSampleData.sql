@@ -1,4 +1,4 @@
--- ============================================================================
+﻿-- ============================================================================
 -- DỰ ÁN: QUẢN LÝ KÝ TÚC XÁ (QuanLyKyTucXa)
 -- HỌC PHẦN: LẬP TRÌNH TRỰC QUAN (LTTQ) - .NET 9 & C# 12/13
 -- FILE: 04_InsertSampleData.sql
@@ -13,7 +13,7 @@ SET QUOTED_IDENTIFIER ON;
 GO
 
 -- CẢNH BÁO: FILE NÀY NẠP LẠI DỮ LIỆU MẪU VÀ XÓA DỮ LIỆU CŨ.
--- Chỉ tạo/reset Admin: dùng 07_SetupDemoAdmin.sql.
+-- Chỉ tạo/reset Admin: dùng 06_ResetDemoAccounts.sql.
 -- XÓA DỮ LIỆU CŨ THEO THỨ TỰ RÀNG BUỘC
 IF OBJECT_ID(N'dbo.TaiKhoanKhoiPhuc', N'U') IS NOT NULL
     EXEC(N'DELETE FROM dbo.TaiKhoanKhoiPhuc');
@@ -29,19 +29,21 @@ DELETE FROM dbo.Giuong;
 DELETE FROM dbo.Phong;
 DELETE FROM dbo.ToaNha;
 DELETE FROM dbo.SinhVien;
+IF OBJECT_ID(N'dbo.TaiKhoanDangNhap', N'U') IS NOT NULL
+    EXEC(N'DELETE FROM dbo.TaiKhoanDangNhap');
 DELETE FROM dbo.NguoiDung;
 GO
 
 -- 1. TÀI KHOẢN NGƯỜI DÙNG (NguoiDung)
--- Admin: Admin@123 (PBKDF2-SHA256). Các tài khoản mẫu khác: 123456 (SHA256 cũ, nâng cấp khi đăng nhập).
+-- Admin: Admin@123; Nhân viên: NhanVien@123; Sinh viên: SinhVien@123 (PBKDF2-SHA256).
 SET IDENTITY_INSERT dbo.NguoiDung ON;
 INSERT INTO dbo.NguoiDung (MaNguoiDung, TenDangNhap, MatKhauHash, HoTen, Email, SoDienThoai, VaiTro, TrangThai)
 VALUES 
 (1, N'admin', N'PBKDF2-SHA256$600000$gltA27sVEvlyhPpy64Hi8w==$8bczWZFRkePj1TjvhwETvGrLTzToYSYxjOlYJr3PcWk=', N'Quản trị viên Hệ thống', N'admin@ktx.edu.vn', N'0901234567', N'Admin', 1),
-(2, N'nhanvien01', N'8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', N'Nguyễn Văn Quản Lý', N'quanly@ktx.edu.vn', N'0912345678', N'NhanVien', 1),
-(3, N'sv2026001', N'8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', N'Nguyễn Văn An', N'an.nv@sinhvien.edu.vn', N'0987654321', N'SinhVien', 1),
-(4, N'sv2026002', N'8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', N'Trần Thị Bình', N'binh.tt@sinhvien.edu.vn', N'0987654322', N'SinhVien', 1),
-(5, N'sv2026003', N'8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', N'Lê Hoàng Nam', N'nam.lh@sinhvien.edu.vn', N'0987654323', N'SinhVien', 1);
+(2, N'nhanvien01', N'PBKDF2-SHA256$600000$hS/mw0kVued1j+WKngc8gQ==$fheghY73BSNeN8tWyd43oLnfV4ZldZArrWOcPG/UiNc=', N'Nguyễn Văn Quản Lý', N'quanly@ktx.edu.vn', N'0912345678', N'NhanVien', 1),
+(3, N'sv2026001', N'PBKDF2-SHA256$600000$FNBbltqSiSFnr1c/bJcRSg==$fcDxXG0hwj2LkbBTbOVvPRRSExC+JNQiYvkJ1iJFnXg=', N'Nguyễn Văn An', N'an.nv@sinhvien.edu.vn', N'0987654321', N'SinhVien', 1),
+(4, N'sv2026002', N'PBKDF2-SHA256$600000$FNBbltqSiSFnr1c/bJcRSg==$fcDxXG0hwj2LkbBTbOVvPRRSExC+JNQiYvkJ1iJFnXg=', N'Trần Thị Bình', N'binh.tt@sinhvien.edu.vn', N'0987654322', N'SinhVien', 1),
+(5, N'sv2026003', N'PBKDF2-SHA256$600000$FNBbltqSiSFnr1c/bJcRSg==$fcDxXG0hwj2LkbBTbOVvPRRSExC+JNQiYvkJ1iJFnXg=', N'Lê Hoàng Nam', N'nam.lh@sinhvien.edu.vn', N'0987654323', N'SinhVien', 1);
 SET IDENTITY_INSERT dbo.NguoiDung OFF;
 GO
 
@@ -193,4 +195,67 @@ INSERT INTO dbo.SuCo (MaPhong, MaSV, TieuDe, MoTa, MucDoUuTien, NgayBao, TrangTh
 VALUES 
 (N'A1-101', N'SV2026001', N'Vòi nước nhà tắm bị rò rỉ', N'Vòi nước bồn rửa mặt bị rỉ nước liên tục gây lãng phí nước', N'Bình thường', '2026-10-12 10:00:00', N'Đang xử lý', N'Thợ điện nước Tuấn', 50000),
 (N'B2-101', N'SV2026002', N'Cháy bóng đèn tuýp LED', N'Bóng đèn chính phòng ngủ bị nhấp nháy rồi tắt hẳn', N'Khẩn cấp', '2026-10-10 19:30:00', N'Đã giải quyết', N'Thợ điện nước Tuấn', 85000);
+GO
+
+GO
+-- Bổ sung đủ giường cho các phòng trong dữ liệu mẫu.
+-- Complete missing bed records for the room capacities already declared.
+-- Safe to rerun: existing beds, contracts and occupancy are not overwritten.
+USE QuanLyKTXDB; -- Nhớ đổi tên database trong giống của mình
+GO
+SET NOCOUNT ON;
+SET XACT_ABORT ON;
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+BEGIN TRY
+    BEGIN TRANSACTION;
+    DECLARE @Expected TABLE (MaPhong nvarchar(20) PRIMARY KEY, Capacity int);
+    INSERT INTO @Expected VALUES (N'A1-201', 6), (N'B2-102', 4);
+    IF (SELECT COUNT(*) FROM dbo.Phong WITH (UPDLOCK, HOLDLOCK)
+        WHERE MaPhong IN (N'A1-201', N'B2-102')) <> 2
+        THROW 50001, N'Không tìm thấy đủ hai phòng cần bổ sung giường.', 1;
+    IF EXISTS (SELECT 1 FROM @Expected e JOIN dbo.Phong p ON p.MaPhong=e.MaPhong
+        WHERE p.SoChoToiDa<>e.Capacity)
+        THROW 50002, N'Sức chứa phòng đã thay đổi. Cần kiểm tra trước khi bổ sung giường.', 1;
+
+    DECLARE @Beds TABLE (MaGiuong nvarchar(30), MaPhong nvarchar(20),
+        TenGiuong nvarchar(50), ViTri nvarchar(30), TrangThai nvarchar(30));
+    INSERT INTO @Beds VALUES
+(N'A1-201-G1', N'A1-201', N'Giường 1', NULL, N'Trống'),
+(N'A1-201-G2', N'A1-201', N'Giường 2', NULL, N'Trống'),
+(N'A1-201-G3', N'A1-201', N'Giường 3', NULL, N'Trống'),
+(N'A1-201-G4', N'A1-201', N'Giường 4', NULL, N'Trống'),
+(N'A1-201-G5', N'A1-201', N'Giường 5', NULL, N'Trống'),
+(N'A1-201-G6', N'A1-201', N'Giường 6', NULL, N'Trống'),
+(N'B2-102-G1', N'B2-102', N'Giường 1', NULL, N'Trống'),
+(N'B2-102-G2', N'B2-102', N'Giường 2', NULL, N'Trống'),
+(N'B2-102-G3', N'B2-102', N'Giường 3', NULL, N'Trống'),
+(N'B2-102-G4', N'B2-102', N'Giường 4', NULL, N'Trống');
+
+    INSERT INTO dbo.Giuong (MaGiuong, MaPhong, TenGiuong, ViTri, TrangThai)
+    SELECT b.MaGiuong,b.MaPhong,b.TenGiuong,b.ViTri,b.TrangThai
+    FROM @Beds b
+    WHERE NOT EXISTS (SELECT 1 FROM dbo.Giuong g WITH (UPDLOCK, HOLDLOCK)
+        WHERE g.MaGiuong=b.MaGiuong);
+    DECLARE @Added int=@@ROWCOUNT;
+    IF EXISTS (SELECT 1 FROM @Expected e
+        WHERE (SELECT COUNT(*) FROM dbo.Giuong g WHERE g.MaPhong=e.MaPhong)<>e.Capacity)
+        THROW 50003, N'Số giường không khớp sức chứa; đã hủy toàn bộ lần bổ sung này.', 1;
+    COMMIT TRANSACTION;
+    SELECT @Added AS GiuongDaBoSung;
+END TRY
+BEGIN CATCH
+    IF @@TRANCOUNT>0 ROLLBACK TRANSACTION;
+    THROW;
+END CATCH;
+GO
+SELECT p.MaPhong,p.SoChoToiDa AS SucChua,COUNT(g.MaGiuong) AS SoGiuong,
+    SUM(CASE WHEN g.TrangThai=N'Trống' THEN 1 ELSE 0 END) AS GiuongTrong
+FROM dbo.Phong p LEFT JOIN dbo.Giuong g ON g.MaPhong=p.MaPhong
+GROUP BY p.MaPhong,p.SoChoToiDa ORDER BY p.MaPhong;
+SELECT COUNT(*) AS TongGiuong,
+    SUM(CASE WHEN TrangThai=N'Đang sử dụng' THEN 1 ELSE 0 END) AS DangSuDung,
+    SUM(CASE WHEN TrangThai=N'Trống' THEN 1 ELSE 0 END) AS GiuongTrong,
+    CAST(100.0*SUM(CASE WHEN TrangThai=N'Đang sử dụng' THEN 1 ELSE 0 END)/
+        NULLIF(COUNT(*),0) AS decimal(5,2)) AS TyLeLapDay
+FROM dbo.Giuong;
 GO

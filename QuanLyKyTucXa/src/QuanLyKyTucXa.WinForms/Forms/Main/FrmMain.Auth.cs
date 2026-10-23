@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using QuanLyKyTucXa.Infrastructure.Data.Context;
 using QuanLyKyTucXa.Infrastructure.Security;
 using QuanLyKyTucXa.Infrastructure.Services;
@@ -24,6 +24,9 @@ public partial class FrmMain
         classicAccountText.Text = $"Tài khoản: {_session.Username} ({_session.RoleDisplayName}) | {DateTime.Today:dd/MM/yyyy}";
         var users = new ToolStripMenuItem("Quản lý tài khoản") { Name = "mnuUsers", Visible = _session.IsAdmin };
         users.Click += (_, _) => ShowUsers();
+        var handoff = new ToolStripMenuItem("Lưu dữ liệu bàn giao") { Name = "mnuDataHandoff", Visible = _session.IsAdmin };
+        handoff.Click += async (_, _) => await SaveDataHandoffAsync(handoff);
+        mnuSystem.DropDownItems.Add(handoff);
         var password = new ToolStripMenuItem("Đổi mật khẩu") { Name = "mnuChangePassword" };
         password.Click += async (_, _) => {
             if (!await EnsureSessionAsync() || _session is null) return;
@@ -44,6 +47,19 @@ public partial class FrmMain
         _searchShell.Visible = staff;
         btnNavStudents.Visible = btnNavApprovals.Visible = btnNavUtilities.Visible = btnNavReports.Visible = staff;
         btnOpenStudents.Visible = btnOpenRooms.Visible = btnOpenApprovals.Visible = staff;
+        mnuReports.Visible = btnNavReports.Visible = AuthPolicy.Can(_session, AppPermission.ViewReports);
+        var permissions = new ToolStripMenuItem("Quyền hạn của tôi") { Name = "mnuMyPermissions" };
+        permissions.Click += (_, _) => {
+            var detail = _session.IsAdmin
+                ? "ADMIN\n• Quản lý tài khoản, phân quyền và mở khóa đăng nhập.\n• Thêm, sửa, xóa phòng và hồ sơ sinh viên.\n• Nhập Excel, xem báo cáo và lưu dữ liệu bàn giao.\n• Đăng ký, duyệt/từ chối đơn và các nghiệp vụ ký túc xá."
+                : _session.IsStaff
+                ? "NHÂN VIÊN\n• Xem, thêm và sửa hồ sơ sinh viên.\n• Xem/tìm phòng; đăng ký, duyệt hoặc từ chối đơn.\n• Xuất danh sách Excel.\n\nChỉ Admin: phân quyền/tài khoản, xóa hồ sơ, thêm–sửa–xóa phòng, nhập Excel, báo cáo và dữ liệu bàn giao."
+                : "SINH VIÊN\n• Xem phòng, hợp đồng, hóa đơn và báo hỏng của chính mình.\n• Đăng ký KTX, tra cứu đơn của mình và gửi báo hỏng.\n• Đổi mật khẩu cá nhân.\n\nKhông xem hồ sơ người khác, không duyệt đơn, sửa phòng hoặc quản lý tài khoản.";
+            MessageBox.Show(this, detail, "Quyền hạn tài khoản", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        };
+        mnuSystem.DropDownItems.Add(permissions);
+        var roleInfo = new ToolStripMenuItem("Quyền: " + _session.RoleDisplayName) { Enabled = false };
+        mnuSystem.DropDownItems.Insert(0, roleInfo);
         if (_session.IsStudent)
         {
             mnuHome.Text = mnuDashboard.Text = "Thông tin cá nhân";

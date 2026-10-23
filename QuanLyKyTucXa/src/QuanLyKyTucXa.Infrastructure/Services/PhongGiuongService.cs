@@ -37,7 +37,7 @@ public sealed class PhongGiuongService(Func<AppDbContext> createDb, AuthSession?
         if (value.GiaPhong < 0 || value.GiaPhong > 9999999999999999.99m) throw new InvalidOperationException("Giá phòng không hợp lệ.");
         if (value.GhiChu?.Length > 255) throw new InvalidOperationException("Ghi chú tối đa 255 ký tự.");
         await using var db = createDb();
-        await AuthPolicy.RequireAsync(db, session, AppPermission.ManageRooms);
+        await AuthPolicy.RequireAsync(db, session, AppPermission.ConfigureRooms);
         await using var transaction = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
         var tower = await db.ToaNhas.SingleOrDefaultAsync(x => x.MaToa == value.MaToa)
             ?? throw new InvalidOperationException("Vui lòng chọn tòa nhà hợp lệ.");
@@ -101,7 +101,7 @@ public sealed class PhongGiuongService(Func<AppDbContext> createDb, AuthSession?
     public async Task DeleteAsync(string id)
     {
         await using var db = createDb();
-        await AuthPolicy.RequireAsync(db, session, AppPermission.ManageRooms);
+        await AuthPolicy.RequireAsync(db, session, AppPermission.DeleteRooms);
         await using var transaction = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
         var entity = await db.Phongs.Include(x => x.Giuongs).SingleOrDefaultAsync(x => x.MaPhong == id)
             ?? throw new InvalidOperationException("Phòng không còn tồn tại.");

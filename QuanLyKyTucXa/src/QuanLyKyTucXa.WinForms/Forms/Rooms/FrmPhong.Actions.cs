@@ -1,4 +1,4 @@
-﻿using QuanLyKyTucXa.Infrastructure;
+using QuanLyKyTucXa.Infrastructure;
 using QuanLyKyTucXa.Infrastructure.Data.Context;
 using QuanLyKyTucXa.Infrastructure.Services;
 
@@ -35,6 +35,8 @@ public partial class FrmPhong
     }
     private async Task EditRoomAsync(string? id)
     {
+        if (!QuanLyKyTucXa.Infrastructure.Security.AuthPolicy.Can(_session, QuanLyKyTucXa.Infrastructure.Security.AppPermission.ConfigureRooms))
+            throw new UnauthorizedAccessException("Chỉ Admin được thêm hoặc sửa cấu hình phòng.");
         var service = RoomService;
         var towers = await service.GetTowersAsync();
         if (towers.Count == 0) throw new InvalidOperationException("Chưa có tòa nhà. Cần khai báo tòa nhà trước khi thêm phòng.");
