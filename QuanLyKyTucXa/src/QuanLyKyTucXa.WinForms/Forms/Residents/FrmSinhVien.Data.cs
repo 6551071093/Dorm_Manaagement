@@ -1,3 +1,4 @@
+﻿using QuanLyKyTucXa.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
 using QuanLyKyTucXa.Infrastructure.Data.Context;
 
@@ -16,6 +17,7 @@ public partial class FrmSinhVien
 
     private void ConfigureDatabaseEvents()
     {
+        EnsureStudentColumns();
         dgvSinhVien.AutoGenerateColumns = false;
         dgvSinhVien.Columns[2].DefaultCellStyle.Format = "dd/MM/yyyy";
         cboKhoa.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -38,14 +40,34 @@ public partial class FrmSinhVien
             ApplyStudentFilters();
         };
         btnXuatExcel.Click += ExportStudents_Click;
+        btnTaiMau.Click += DownloadTemplate_Click;
         btnThem.Click += AddStudent_Click;
         btnSua.Click += EditStudent_Click;
         btnXoa.Click += DeleteStudent_Click;
     }
 
+    // Restore columns even if a Designer save drops their serialized definitions.
+    private void EnsureStudentColumns()
+    {
+        if (dgvSinhVien.Columns.Count == 9) return;
+        dgvSinhVien.Columns.Clear();
+        dataGridViewTextBoxColumn1 = new DataGridViewTextBoxColumn { Name = "dataGridViewTextBoxColumn1", DataPropertyName = "MaSv", HeaderText = "Mã SV", FillWeight = 11, MinimumWidth = 95 };
+        dataGridViewTextBoxColumn2 = new DataGridViewTextBoxColumn { Name = "dataGridViewTextBoxColumn2", DataPropertyName = "HoTen", HeaderText = "Họ và tên", FillWeight = 17, MinimumWidth = 145 };
+        dataGridViewTextBoxColumn3 = new DataGridViewTextBoxColumn { Name = "dataGridViewTextBoxColumn3", DataPropertyName = "NgaySinh", HeaderText = "Ngày sinh", FillWeight = 11, MinimumWidth = 100 };
+        dataGridViewTextBoxColumn4 = new DataGridViewTextBoxColumn { Name = "dataGridViewTextBoxColumn4", DataPropertyName = "GioiTinh", HeaderText = "Giới tính", FillWeight = 8, MinimumWidth = 100 };
+        dataGridViewTextBoxColumn5 = new DataGridViewTextBoxColumn { Name = "dataGridViewTextBoxColumn5", DataPropertyName = "Cccd", HeaderText = "CCCD", FillWeight = 13, MinimumWidth = 125 };
+        dataGridViewTextBoxColumn6 = new DataGridViewTextBoxColumn { Name = "dataGridViewTextBoxColumn6", DataPropertyName = "SoDienThoai", HeaderText = "Số điện thoại", FillWeight = 12, MinimumWidth = 120 };
+        dataGridViewTextBoxColumn7 = new DataGridViewTextBoxColumn { Name = "dataGridViewTextBoxColumn7", DataPropertyName = "Lop", HeaderText = "Lớp", FillWeight = 11, MinimumWidth = 105 };
+        dataGridViewTextBoxColumn8 = new DataGridViewTextBoxColumn { Name = "dataGridViewTextBoxColumn8", DataPropertyName = "Khoa", HeaderText = "Khoa", FillWeight = 17, MinimumWidth = 155 };
+        dataGridViewTextBoxColumn9 = new DataGridViewTextBoxColumn { Name = "dataGridViewTextBoxColumn9", DataPropertyName = "TrangThai", HeaderText = "Trạng thái", FillWeight = 13, MinimumWidth = 125 };
+        dgvSinhVien.Columns.AddRange(dataGridViewTextBoxColumn1, dataGridViewTextBoxColumn2, dataGridViewTextBoxColumn3,
+            dataGridViewTextBoxColumn4, dataGridViewTextBoxColumn5, dataGridViewTextBoxColumn6,
+            dataGridViewTextBoxColumn7, dataGridViewTextBoxColumn8, dataGridViewTextBoxColumn9);
+        foreach (DataGridViewColumn col in dgvSinhVien.Columns) col.SortMode = DataGridViewColumnSortMode.NotSortable;
+    }
     public async Task RefreshViewAsync()
     {
-        if (_loadingData) return;
+        if (_loadingData || _excelBusy) return;
         _loadingData = true;
         UseWaitCursor = true;
         btnTimKiem.Enabled = false;
@@ -55,6 +77,7 @@ public partial class FrmSinhVien
             if (string.IsNullOrWhiteSpace(_connectionString))
                 throw new InvalidOperationException("Chưa có chuỗi kết nối database.");
             await using var db = AppDbContextFactory.Create(_connectionString);
+            await AuthPolicy.RequireAsync(db, _session, AppPermission.ManageResidents);
             var students = await db.SinhViens.AsNoTracking().OrderBy(s => s.MaSv)
                 .Select(s => new StudentListRow(s.MaSv, s.HoTen, s.NgaySinh, s.GioiTinh,
                     s.Cccd, s.SoDienThoai, s.Lop, s.Khoa, s.TrangThai))
@@ -69,6 +92,7 @@ public partial class FrmSinhVien
                 cboKhoa.Items.AddRange(_students.Select(s => s.Khoa).Where(x => !string.IsNullOrWhiteSpace(x))
                     .Distinct().OrderBy(x => x).Cast<object>().ToArray());
                 cboKhoa.SelectedIndex = 0;
+                cboLop.SelectedIndex = 0;
                 txtTimKiem.Clear();
             }
             finally { _updatingFilters = false; }
@@ -131,22 +155,8 @@ public partial class FrmSinhVien
         RecordCountChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    private void ExportStudents_Click(object? sender, EventArgs e)
-    {
-        using var dialog = new SaveFileDialog
-        {
-            Title = "Xuất danh sách sinh viên",
-            Filter = "Excel Workbook (*.xlsx)|*.xlsx",
-            FileName = $"SinhVien_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx",
-            AddExtension = true
-        };
-        if (dialog.ShowDialog(this) != DialogResult.OK) return;
-        try { GridExcelExporter.Export(dgvSinhVien, dialog.FileName); }
-        catch (Exception ex)
-        {
-            MessageBox.Show(this, "Không thể xuất Excel. " + ex.Message, "Xuất Excel",
-                MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-    }
+    private async void ExportStudents_Click(object? sender, EventArgs e) => await ExportStudentsAsync();
 }
+
+
 
