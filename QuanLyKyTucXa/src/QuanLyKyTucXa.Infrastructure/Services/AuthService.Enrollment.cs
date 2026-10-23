@@ -10,7 +10,8 @@ namespace QuanLyKyTucXa.Infrastructure.Services;
 
 public sealed partial class AuthService
 {
-    public static string NewRecoveryCode() => Convert.ToHexString(RandomNumberGenerator.GetBytes(24));
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, (int Count, DateTimeOffset Until)> RecoveryAttempts = new(StringComparer.OrdinalIgnoreCase);
+    public static string NewRecoveryCode() => Convert.ToHexString(RandomNumberGenerator.GetBytes(8));
     private static string RecoveryHash(string code) => Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(code.Trim().ToUpperInvariant())));
 
     public async Task<string> RegisterAsync(string username, string fullName, string password)
@@ -42,8 +43,13 @@ public sealed partial class AuthService
     public async Task<string> ResetPasswordAsync(string username, string recoveryCode, string newPassword)
     {
         username = username.Trim(); recoveryCode = recoveryCode.Trim();
+        if (username.Length is < 3 or > 50) throw new InvalidOperationException("Tên đăng nhập hoặc mã khôi phục không đúng.");
+        var now = DateTimeOffset.UtcNow;
+        var attempt = RecoveryAttempts.AddOrUpdate(username, (1, now.AddMinutes(15)),
+            (_, previous) => previous.Until <= now ? (1, now.AddMinutes(15)) : (previous.Count + 1, previous.Until));
+        if (attempt.Count > 5) throw new InvalidOperationException("Đã thử khôi phục nhiều lần. Vui lòng đợi 15 phút hoặc liên hệ Admin.");
         PasswordHash.ValidateNew(newPassword);
-        if (username.Length is < 3 or > 50 || !Regex.IsMatch(recoveryCode, @"\A[0-9A-Fa-f]{48}\z"))
+        if (username.Length is < 3 or > 50 || !Regex.IsMatch(recoveryCode, @"\A(?:[0-9A-Fa-f]{16}|[0-9A-Fa-f]{48})\z"))
             throw new InvalidOperationException("Tên đăng nhập hoặc mã khôi phục không đúng.");
         var nextCode = NewRecoveryCode();
         var nextRecoveryHash = RecoveryHash(nextCode);
@@ -67,6 +73,7 @@ public sealed partial class AuthService
         await db.Database.ExecuteSqlInterpolatedAsync($"UPDATE dbo.TaiKhoanKhoiPhuc SET MaKhoiPhucHash = {nextRecoveryHash}, NgayCap = SYSUTCDATETIME() WHERE MaNguoiDung = {account.MaNguoiDung}");
         await transaction.CommitAsync();
         Attempts.TryRemove(username, out _);
+        RecoveryAttempts.TryRemove(username, out _);
         return nextCode;
     }
 }

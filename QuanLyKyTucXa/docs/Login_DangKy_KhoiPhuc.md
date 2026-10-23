@@ -27,3 +27,8 @@ Không tạo tài khoản mặc định hoặc reset Admin tự động khi ứn
 - database/scripts/06_AccountRecovery.sql
 
 Admin quản lý vai trò bằng FrmNguoiDung/UserAccountEditDialog và AuthPolicy đã tích hợp ở lượt trước. Khi giao phần Tú lên Git cần kèm cả các file nền phân quyền đó.
+
+## Cập nhật mã khôi phục
+Mã mới gồm 16 ký tự hex ngẫu nhiên, không phân biệt hoa/thường. Mã 48 ký tự đã cấp vẫn được chấp nhận đến khi sử dụng/thay mới.
+Giới hạn 5 lần thử khôi phục trong 15 phút theo tên tài khoản trong phiên chạy ứng dụng. Giới hạn này lưu trong bộ nhớ và sẽ mất khi ứng dụng khởi động lại.
+Tên admin đã có sẵn với vai trò Admin nên tài khoản này được cập nhật theo yêu cầu người dùng; admin.bon được giữ nguyên. Mật khẩu/mã khôi phục được bàn giao riêng, không lưu trong repository.
