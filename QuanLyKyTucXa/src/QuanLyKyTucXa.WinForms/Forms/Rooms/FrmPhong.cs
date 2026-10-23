@@ -1,4 +1,4 @@
-﻿using QuanLyKyTucXa.Infrastructure.Security;
+using QuanLyKyTucXa.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
 using QuanLyKyTucXa.Infrastructure.Data.Context;
 using System;
@@ -21,6 +21,11 @@ public partial class FrmPhong : Form
         _connectionString = connectionString;
         _session = session;
         InitializeComponent();
+        if (_session is not null)
+        {
+            btnXoa.Visible = AuthPolicy.Can(_session, AppPermission.DeleteRooms);
+            btnThem.Visible = btnSua.Visible = AuthPolicy.Can(_session, AppPermission.ConfigureRooms);
+        }
         cboToa.SelectedIndex = 0;
         cboTrangThai.SelectedIndex = 0;
         Load += async (_, _) => await RefreshViewAsync();

@@ -25,11 +25,21 @@ public sealed partial class AuthService(Func<AppDbContext> createDb)
             var valid = PasswordHash.Verify(password, account?.MatKhauHash ?? DummyHash, out var upgrade);
             return (Valid: valid, Upgrade: upgrade);
         });
-        if (account is null || !account.TrangThai || !result.Valid || account.VaiTro is not ("Admin" or "NhanVien" or "SinhVien"))
+        if (account is not null && !account.TrangThai)
+            throw new InvalidOperationException("Tài khoản đang bị khóa hoặc chưa được kích hoạt. Liên hệ Admin để mở khóa.");
+        if (account is null || !result.Valid)
         {
             Attempts.AddOrUpdate(username, (1, now.AddSeconds(30)), (_, old) => old.Until <= now ? (1, now.AddSeconds(30)) : (old.Count + 1, now.AddSeconds(30)));
-            throw new InvalidOperationException("Tên đăng nhập hoặc mật khẩu không đúng, hoặc tài khoản đã bị khóa.");
+            if (account is not null)
+            {
+                var state = await repository.RecordFailureAsync(account);
+                if (state.Locked) throw new InvalidOperationException("Tài khoản đã bị khóa do sai mật khẩu 5 lần. Liên hệ Admin mở khóa.");
+                throw new InvalidOperationException($"Tên đăng nhập hoặc mật khẩu không đúng. Còn {5 - state.FailedAttempts} lần thử trước khi khóa tài khoản.");
+            }
+            throw new InvalidOperationException("Tên đăng nhập hoặc mật khẩu không đúng.");
         }
+        if (account.VaiTro is not ("Admin" or "NhanVien" or "SinhVien"))
+            throw new InvalidOperationException("Tài khoản chưa được cấp vai trò hợp lệ. Liên hệ Admin.");
         string? studentId = null;
         if (account.VaiTro == "SinhVien")
         {
@@ -39,7 +49,7 @@ public sealed partial class AuthService(Func<AppDbContext> createDb)
         }
         var upgraded = result.Upgrade ? await Task.Run(() => PasswordHash.Create(password)) : null;
         if (!await repository.CompleteLoginAsync(account, upgraded))
-            throw new InvalidOperationException("Tài khoản vừa thay đổi. Vui lòng đăng nhập lại.");
+            throw new InvalidOperationException("Tài khoản đã bị khóa hoặc vừa thay đổi. Vui lòng đăng nhập lại hoặc liên hệ Admin.");
         Attempts.TryRemove(username, out _);
         return new AuthSession(account.MaNguoiDung, account.TenDangNhap, account.HoTen, account.VaiTro, studentId, upgraded ?? account.MatKhauHash);
     }
@@ -56,7 +66,7 @@ public sealed partial class AuthService(Func<AppDbContext> createDb)
         var newHash = await Task.Run(() => PasswordHash.Create(newPassword));
         var affected = await db.NguoiDungs.Where(x => x.MaNguoiDung == session.UserId && x.TrangThai && x.MatKhauHash == user.MatKhauHash)
             .ExecuteUpdateAsync(set => set.SetProperty(x => x.MatKhauHash, newHash));
-        if (affected != 1) throw new InvalidOperationException("Tài khoản vừa thay đổi. Vui lòng đăng nhập lại.");
+        if (affected != 1) throw new InvalidOperationException("Tài khoản đã bị khóa hoặc vừa thay đổi. Vui lòng đăng nhập lại hoặc liên hệ Admin.");
         session.CredentialHash = newHash;
     }
 }

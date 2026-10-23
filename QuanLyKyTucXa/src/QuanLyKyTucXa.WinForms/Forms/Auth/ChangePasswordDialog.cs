@@ -1,4 +1,4 @@
-﻿using QuanLyKyTucXa.Infrastructure.Security;
+using QuanLyKyTucXa.Infrastructure.Security;
 using QuanLyKyTucXa.Infrastructure.Services;
 
 namespace QuanLyKyTucXa.WinForms.Forms.Auth;
@@ -8,7 +8,7 @@ public partial class ChangePasswordDialog : Form
     private readonly AuthService? _service;
     private readonly AuthSession? _session;
     private bool _busy;
-    public ChangePasswordDialog() => InitializeComponent();
+    public ChangePasswordDialog() { InitializeComponent(); QuanLyKyTucXa.WinForms.Helpers.DialogLayout.Configure(this, tlpRoot, flpActions, tlpFields); }
     public ChangePasswordDialog(AuthService service, AuthSession session) : this() { _service = service; _session = session; }
     private async void Save_Click(object? sender, EventArgs e)
     {

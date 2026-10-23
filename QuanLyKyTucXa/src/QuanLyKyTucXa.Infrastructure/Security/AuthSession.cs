@@ -1,9 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using QuanLyKyTucXa.Infrastructure.Data.Context;
 
 namespace QuanLyKyTucXa.Infrastructure.Security;
 
-public enum AppPermission { Staff, ManageResidents, ManageRooms, Register, ViewApplications, ApproveApplications, ManageUsers, Personal }
+public enum AppPermission { Staff, ManageResidents, ManageRooms, Register, ViewApplications, ApproveApplications, ManageUsers, Personal, DeleteResidents, DeleteRooms, ImportResidents, ViewReports, ConfigureRooms }
 
 public sealed class AuthSession
 {
@@ -31,10 +31,11 @@ public static class AuthPolicy
     {
         if (session?.IsActive != true) return false;
         return permission switch {
-            AppPermission.ManageUsers => session.IsAdmin,
+            AppPermission.ConfigureRooms or AppPermission.ManageUsers or AppPermission.DeleteResidents or AppPermission.DeleteRooms or AppPermission.ImportResidents or AppPermission.ViewReports => session.IsAdmin,
             AppPermission.Personal => session.IsStudent && session.StudentId is not null,
             AppPermission.Register or AppPermission.ViewApplications => session.IsStaff || (session.IsStudent && session.StudentId is not null),
-            _ => session.IsStaff
+            AppPermission.Staff or AppPermission.ManageResidents or AppPermission.ManageRooms or AppPermission.ApproveApplications => session.IsStaff,
+            _ => false
         };
     }
 

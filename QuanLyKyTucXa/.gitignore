@@ -60,3 +60,9 @@ artifacts/demo/*
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Cấu hình/mật khẩu cục bộ cho database chung
+*.local.sql
+*.local.txt
+appsettings.local.json
+

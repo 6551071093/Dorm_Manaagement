@@ -1,4 +1,4 @@
-﻿using QuanLyKyTucXa.Infrastructure.Data.Context;
+using QuanLyKyTucXa.Infrastructure.Data.Context;
 using QuanLyKyTucXa.Infrastructure.Security;
 using QuanLyKyTucXa.Infrastructure.Services;
 
@@ -13,8 +13,13 @@ public partial class FrmNguoiDung : Form
     public FrmNguoiDung()
     {
         InitializeComponent();
+        dgvUsers.Columns.Add(new DataGridViewTextBoxColumn { Name = "FailedAttempts", DataPropertyName = "FailedAttempts", HeaderText = "Số lần sai", FillWeight = 10, MinimumWidth = 82 });
+        dgvUsers.Columns.Add(new DataGridViewTextBoxColumn { Name = "LoginLocked", DataPropertyName = "LoginLocked", HeaderText = "Khóa do đăng nhập", FillWeight = 15, MinimumWidth = 140 });
         cboRole.Items.AddRange(new object[] { "Tất cả vai trò", "Admin", "NhanVien", "SinhVien" });
+        cboRole.FormattingEnabled = true;
+        cboRole.Format += (_, e) => e.Value = e.ListItem?.ToString() switch { "Admin" => "Quản trị viên", "NhanVien" => "Nhân viên", "SinhVien" => "Sinh viên", _ => e.ListItem };
         cboRole.SelectedIndex = 0;
+        dgvUsers.CellFormatting += FormatAccountState;
         txtSearch.TextChanged += (_, _) => ApplyFilter();
         cboRole.SelectedIndexChanged += (_, _) => ApplyFilter();
         dgvUsers.SelectionChanged += (_, _) => UpdateToggle();
@@ -22,6 +27,7 @@ public partial class FrmNguoiDung : Form
             if (e.RowIndex < 0) return;
             var property = dgvUsers.Columns[e.ColumnIndex].DataPropertyName;
             if (property == "Role") e.Value = e.Value?.ToString() switch { "Admin" => "Quản trị viên", "NhanVien" => "Nhân viên", "SinhVien" => "Sinh viên", _ => e.Value };
+            if (property == "LoginLocked" && e.Value is bool locked) e.Value = locked ? "Sai mật khẩu 5 lần" : "Không";
             if (property == "Enabled" && e.Value is bool enabled) e.Value = enabled ? "Hoạt động" : "Đã khóa";
         };
         Load += async (_, _) => await RefreshViewAsync();
@@ -37,14 +43,18 @@ public partial class FrmNguoiDung : Form
     private void ApplyFilter()
     {
         var key = txtSearch.Text.Trim();
-        dgvUsers.DataSource = _users.Where(x => (cboRole.SelectedIndex <= 0 || x.Role == cboRole.Text)
+        dgvUsers.DataSource = _users.Where(x => (cboRole.SelectedIndex <= 0 || x.Role == cboRole.SelectedItem?.ToString())
             && (key.Length == 0 || x.Username.Contains(key, StringComparison.OrdinalIgnoreCase)
                 || x.FullName.Contains(key, StringComparison.OrdinalIgnoreCase))).ToList();
         lblCount.Text = $"{dgvUsers.Rows.Count:N0} tài khoản";
     }
     private UserAccountRow Selected() => dgvUsers.CurrentRow?.DataBoundItem as UserAccountRow
         ?? throw new InvalidOperationException("Chọn tài khoản trong danh sách.");
-    private void UpdateToggle() => btnToggle.Text = dgvUsers.CurrentRow?.DataBoundItem is UserAccountRow { Enabled: false } ? "Mở khóa" : "Khóa";
+    private void UpdateToggle()
+    {
+        btnToggle.Text = dgvUsers.CurrentRow?.DataBoundItem is UserAccountRow { Enabled: false } ? "Mở khóa" : "Khóa";
+        UpdateToggleAppearance();
+    }
     private async void Add_Click(object? sender, EventArgs e) => await EditAsync(null);
     private async void Edit_Click(object? sender, EventArgs e)
     {

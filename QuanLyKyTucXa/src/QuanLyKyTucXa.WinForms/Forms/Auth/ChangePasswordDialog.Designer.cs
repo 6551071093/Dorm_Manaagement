@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 namespace QuanLyKyTucXa.WinForms.Forms.Auth;
 partial class ChangePasswordDialog
 {
@@ -46,7 +46,7 @@ partial class ChangePasswordDialog
         tlpRoot.RowStyles.Add(new RowStyle(SizeType.Absolute, 68F));
         tlpRoot.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
         tlpRoot.RowStyles.Add(new RowStyle(SizeType.Absolute, 70F));
-        tlpRoot.RowStyles.Add(new RowStyle(SizeType.Absolute, 44F));
+        tlpRoot.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         tlpRoot.Controls.Add(lblTitle, 0, 0);
         tlpRoot.Controls.Add(tlpFields, 0, 1);
         tlpRoot.Controls.Add(lblMessage, 0, 2);
@@ -111,7 +111,7 @@ partial class ChangePasswordDialog
         lblMessage.ForeColor = Color.Firebrick;
         lblMessage.TextAlign = ContentAlignment.MiddleLeft;
         flpActions.Name = "flpActions";
-        flpActions.Dock = DockStyle.Fill;
+        flpActions.AutoSize = true; flpActions.AutoSizeMode = AutoSizeMode.GrowAndShrink; flpActions.Dock = DockStyle.Fill;
         flpActions.FlowDirection = FlowDirection.RightToLeft;
         flpActions.WrapContents = false;
         flpActions.Controls.Add(btnCancel);

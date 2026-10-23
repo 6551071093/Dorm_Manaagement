@@ -9,6 +9,7 @@ public partial class ForgotPasswordDialog : Form
     public ForgotPasswordDialog()
     {
         InitializeComponent();
+        QuanLyKyTucXa.WinForms.Helpers.DialogLayout.ConfigureAuth(this, root, fields, actions, lblMessage);
         footer.Paint += (_, e) => { using var pen = new Pen(Color.FromArgb(228, 236, 247)); e.Graphics.DrawLine(pen, 0, 0, footer.Width, 0); };
         Shown += (_, _) => txtUsername.Focus();
     }

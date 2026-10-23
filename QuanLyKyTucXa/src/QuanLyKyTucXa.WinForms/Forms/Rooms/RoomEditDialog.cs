@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using QuanLyKyTucXa.Infrastructure;
 using QuanLyKyTucXa.Infrastructure.Services;
 
@@ -16,6 +16,7 @@ public partial class RoomEditDialog : Form
     public RoomEditDialog()
     {
         InitializeComponent();
+        QuanLyKyTucXa.WinForms.Helpers.DialogLayout.ConfigureCompactEditor(this, tlpRoot, pnlScroll, tlpFields, flpActions, lblError, 9);
         components ??= new System.ComponentModel.Container();
     }
 

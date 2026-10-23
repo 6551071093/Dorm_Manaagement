@@ -1,10 +1,10 @@
-﻿using QuanLyKyTucXa.Infrastructure;
+using QuanLyKyTucXa.Infrastructure;
 
 namespace QuanLyKyTucXa.WinForms.Forms.Residents;
 
 public partial class StudentImportPreviewDialog : Form
 {
-    public StudentImportPreviewDialog() => InitializeComponent();
+    public StudentImportPreviewDialog() { InitializeComponent(); QuanLyKyTucXa.WinForms.Helpers.DialogLayout.Configure(this, tlpRoot, flpActions); }
 
     public StudentImportPreviewDialog(IReadOnlyList<SinhVien> students, IReadOnlyList<string> errors) : this()
     {

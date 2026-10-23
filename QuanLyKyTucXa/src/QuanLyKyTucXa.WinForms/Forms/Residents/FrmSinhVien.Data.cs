@@ -1,4 +1,5 @@
-﻿using QuanLyKyTucXa.Infrastructure.Security;
+using QuanLyKyTucXa.Infrastructure.Security;
+using QuanLyKyTucXa.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using QuanLyKyTucXa.Infrastructure.Data.Context;
 
@@ -7,6 +8,7 @@ namespace QuanLyKyTucXa.WinForms.Forms.Residents;
 public partial class FrmSinhVien
 {
     private readonly string _connectionString;
+    private AcademicCatalog _academicCatalog = new([], []);
     private bool _loadingData;
     private bool _updatingFilters;
     private List<StudentListRow> _students = new();
@@ -21,6 +23,7 @@ public partial class FrmSinhVien
         dgvSinhVien.AutoGenerateColumns = false;
         dgvSinhVien.Columns[2].DefaultCellStyle.Format = "dd/MM/yyyy";
         cboKhoa.DropDownStyle = ComboBoxStyle.DropDownList;
+        cboKhoa.DropDownWidth = 330; cboLop.DropDownWidth = 250;
         cboLop.DropDownStyle = ComboBoxStyle.DropDownList;
         cboKhoa.SelectedIndex = 0;
         cboLop.SelectedIndex = 0;
@@ -84,12 +87,13 @@ public partial class FrmSinhVien
                 .ToListAsync();
             if (IsDisposed || Disposing) return;
             _students = students;
+            _academicCatalog = await StudentService.GetAcademicCatalogAsync();
             _updatingFilters = true;
             try
             {
                 cboKhoa.Items.Clear();
                 cboKhoa.Items.Add("Tất cả khoa");
-                cboKhoa.Items.AddRange(_students.Select(s => s.Khoa).Where(x => !string.IsNullOrWhiteSpace(x))
+                cboKhoa.Items.AddRange(_academicCatalog.Faculties.Concat(_students.Select(s => s.Khoa)).Where(x => !string.IsNullOrWhiteSpace(x))
                     .Distinct().OrderBy(x => x).Cast<object>().ToArray());
                 cboKhoa.SelectedIndex = 0;
                 cboLop.SelectedIndex = 0;
@@ -130,7 +134,7 @@ public partial class FrmSinhVien
             cboLop.Items.Clear();
             cboLop.Items.Add("Tất cả lớp");
             cboLop.Items.AddRange(_students.Where(s => faculty is null || s.Khoa == faculty)
-                .Select(s => s.Lop).Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(s => s.Lop).Concat(_academicCatalog.Classes.Where(x => faculty is null || x.Faculty == faculty).Select(x => x.Code)).Where(x => !string.IsNullOrWhiteSpace(x))
                 .Distinct().OrderBy(x => x).Cast<object>().ToArray());
             cboLop.SelectedIndex = previous is not null && cboLop.Items.Contains(previous)
                 ? cboLop.Items.IndexOf(previous) : 0;

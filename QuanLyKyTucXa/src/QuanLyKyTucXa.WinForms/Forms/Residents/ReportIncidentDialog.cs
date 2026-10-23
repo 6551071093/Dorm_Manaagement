@@ -1,10 +1,10 @@
-﻿using QuanLyKyTucXa.Infrastructure.Services;
+using QuanLyKyTucXa.Infrastructure.Services;
 namespace QuanLyKyTucXa.WinForms.Forms.Residents;
 public partial class ReportIncidentDialog : Form
 {
     private readonly PersonalService? _service;
     private bool _busy;
-    public ReportIncidentDialog() => InitializeComponent();
+    public ReportIncidentDialog() { InitializeComponent(); QuanLyKyTucXa.WinForms.Helpers.DialogLayout.Configure(this, layout, actions); }
     public ReportIncidentDialog(PersonalService service) : this() => _service = service;
     private async void Save_Click(object? sender, EventArgs e)
     {
