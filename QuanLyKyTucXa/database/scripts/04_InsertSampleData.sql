@@ -12,7 +12,11 @@ GO
 SET QUOTED_IDENTIFIER ON;
 GO
 
+-- CẢNH BÁO: FILE NÀY NẠP LẠI DỮ LIỆU MẪU VÀ XÓA DỮ LIỆU CŨ.
+-- Chỉ tạo/reset Admin: dùng 07_SetupDemoAdmin.sql.
 -- XÓA DỮ LIỆU CŨ THEO THỨ TỰ RÀNG BUỘC
+IF OBJECT_ID(N'dbo.TaiKhoanKhoiPhuc', N'U') IS NOT NULL
+    EXEC(N'DELETE FROM dbo.TaiKhoanKhoiPhuc');
 DELETE FROM dbo.ChiTietHoaDon;
 DELETE FROM dbo.ThanhToan;
 DELETE FROM dbo.HoaDon;
@@ -29,11 +33,11 @@ DELETE FROM dbo.NguoiDung;
 GO
 
 -- 1. TÀI KHOẢN NGƯỜI DÙNG (NguoiDung)
--- Mật khẩu hash demo (Chuẩn SHA256 hoặc BCrypt, ở đây đặt chuỗi mã hóa cho '123456')
+-- Admin: Admin@123 (PBKDF2-SHA256). Các tài khoản mẫu khác: 123456 (SHA256 cũ, nâng cấp khi đăng nhập).
 SET IDENTITY_INSERT dbo.NguoiDung ON;
 INSERT INTO dbo.NguoiDung (MaNguoiDung, TenDangNhap, MatKhauHash, HoTen, Email, SoDienThoai, VaiTro, TrangThai)
 VALUES 
-(1, N'admin', N'8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', N'Quản trị viên Hệ thống', N'admin@ktx.edu.vn', N'0901234567', N'Admin', 1),
+(1, N'admin', N'PBKDF2-SHA256$600000$gltA27sVEvlyhPpy64Hi8w==$8bczWZFRkePj1TjvhwETvGrLTzToYSYxjOlYJr3PcWk=', N'Quản trị viên Hệ thống', N'admin@ktx.edu.vn', N'0901234567', N'Admin', 1),
 (2, N'nhanvien01', N'8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', N'Nguyễn Văn Quản Lý', N'quanly@ktx.edu.vn', N'0912345678', N'NhanVien', 1),
 (3, N'sv2026001', N'8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', N'Nguyễn Văn An', N'an.nv@sinhvien.edu.vn', N'0987654321', N'SinhVien', 1),
 (4, N'sv2026002', N'8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', N'Trần Thị Bình', N'binh.tt@sinhvien.edu.vn', N'0987654322', N'SinhVien', 1),

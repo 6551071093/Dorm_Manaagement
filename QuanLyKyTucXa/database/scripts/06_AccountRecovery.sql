@@ -1,3 +1,5 @@
+USE [QuanLyKTXDB];
+GO
 -- Chạy trên database KTX đang cấu hình. Không đổi bảng NguoiDung hiện có.
 SET XACT_ABORT ON;
 BEGIN TRANSACTION;

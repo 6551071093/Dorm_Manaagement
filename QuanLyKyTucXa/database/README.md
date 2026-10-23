@@ -39,7 +39,7 @@ sqlcmd -f 65001 -S "(localdb)\MSSQLLocalDB" -i database\scripts\04_InsertSampleD
 
 ## 4. Tài khoản đăng nhập mẫu
 
-Mật khẩu mặc định cho toàn bộ tài khoản thử nghiệm: **`123456`**
+Tài khoản **admin / Admin@123**. Các tài khoản thử nghiệm khác có mật khẩu **123456**.
 
 | Tên đăng nhập | Vai trò | Người dùng | Ghi chú |
 |---|---|---|---|
@@ -48,3 +48,22 @@ Mật khẩu mặc định cho toàn bộ tài khoản thử nghiệm: **`123456
 | `sv2026001` | SinhVien | Nguyễn Văn An | Sinh viên phòng A1-101 |
 | `sv2026002` | SinhVien | Trần Thị Bình | Sinh viên phòng B2-101 |
 | `sv2026003` | SinhVien | Lê Hoàng Nam | Sinh viên phòng A1-101 |
+
+## Đăng nhập Admin sau khi pull code
+
+Git không mang theo dữ liệu SQL Server của máy thành viên khác.
+
+### Máy đã có database QuanLyKTXDB
+1. Mở SSMS, kết nối đúng SQL Server được khai báo tại `ConnectionStrings:KtxDb` trong appsettings.json.
+2. Chạy `database/scripts/06_AccountRecovery.sql` (chạy lại được).
+3. Chạy `database/scripts/07_SetupDemoAdmin.sql`. Script tạo/reset Admin demo, giữ nguyên dữ liệu nghiệp vụ. Lưu mã khôi phục mới trả về trong Results.
+4. Chạy project WinForms, đăng nhập **admin / Admin@123**.
+
+### Máy chưa có database
+Khởi tạo cấu trúc bằng 01, 02, 03. Nếu cần dữ liệu mẫu, chạy 04 rồi 05. Tiếp theo chạy 06 và 07.
+File 04 xóa/nạp lại dữ liệu mẫu; không dùng 04 chỉ để sửa mật khẩu.
+
+Chỉnh tên SQL Server theo máy của mình; `MSI\SQLEXPRESS` chỉ là tên instance trên máy của Bổn. Đặt Database=QuanLyKTXDB và dùng Windows Authentication nếu dùng tài khoản Windows.
+Nếu có biến môi trường `ConnectionStrings__KtxDb`, biến đó có thể ghi đè cấu hình appsettings.json.
+
+`07_SetupDemoAdmin.sql` dành cho bàn giao/demo nhóm, chỉ chạy khi cần tạo/reset Admin. Mỗi lần chạy sẽ đặt lại mật khẩu Admin và mã khôi phục. Ứng dụng không reset mật khẩu khi khởi động.
