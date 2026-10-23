@@ -49,7 +49,7 @@ glyph0.Kind = LoginGlyphKind.User; glyph0.ForeColor = Color.FromArgb(109, 128, 1
 box0.Controls.Add(txtUsername); box0.Controls.Add(glyph0); fields.Controls.Add(label0); fields.Controls.Add(box0);
 label1.Text = "Mã khôi phục"; label1.Font = new Font("Segoe UI", 10F, FontStyle.Bold); label1.Location = new Point(2, 148); label1.Size = new Size(602, 24);
 box1.Location = new Point(0, 172); box1.Size = new Size(606, 52); box1.TabIndex = 1;
-txtRecovery.Name = "txtRecovery"; txtRecovery.BorderStyle = BorderStyle.None; txtRecovery.Location = new Point(48, 15); txtRecovery.Size = new Size(538, 24); txtRecovery.Font = new Font("Segoe UI", 11F); txtRecovery.TabIndex = 0; txtRecovery.MaxLength = 48; txtRecovery.PlaceholderText = "Nhập mã khôi phục 48 ký tự";
+txtRecovery.Name = "txtRecovery"; txtRecovery.BorderStyle = BorderStyle.None; txtRecovery.Location = new Point(48, 15); txtRecovery.Size = new Size(538, 24); txtRecovery.Font = new Font("Segoe UI", 11F); txtRecovery.TabIndex = 0; txtRecovery.MaxLength = 48; txtRecovery.PlaceholderText = "Nhập mã khôi phục (mã mới có 16 ký tự)";
 txtRecovery.UseSystemPasswordChar = true;
 glyph1.Kind = LoginGlyphKind.Key; glyph1.ForeColor = Color.FromArgb(109, 128, 151); glyph1.Location = new Point(21, 16); glyph1.Size = new Size(18, 18);
 box1.Controls.Add(txtRecovery); box1.Controls.Add(glyph1); fields.Controls.Add(label1); fields.Controls.Add(box1);
