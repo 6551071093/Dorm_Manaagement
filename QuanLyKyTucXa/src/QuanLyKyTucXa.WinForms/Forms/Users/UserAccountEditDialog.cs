@@ -7,14 +7,20 @@ public partial class UserAccountEditDialog : Form
     private UserAccountEdit? _value;
     private NguoiDungService? _service;
     private bool _busy;
-    public UserAccountEditDialog() { InitializeComponent(); QuanLyKyTucXa.WinForms.Helpers.DialogLayout.Configure(this, tlpRoot, flpActions, tlpFields); }
+    public UserAccountEditDialog() { InitializeComponent(); QuanLyKyTucXa.WinForms.Helpers.ModernDialog.Install(this, tlpFields, btnSave, btnCancel, lblMessage); }
     public UserAccountEditDialog(UserAccountEdit value, List<StudentAccountChoice> choices, NguoiDungService service) : this()
+    {
+        BindValue(value, choices, service);
+    }
+
+    private void BindValue(UserAccountEdit value, List<StudentAccountChoice> choices, NguoiDungService service)
     {
         _value = value; _service = service;
         Text = value.Id is null ? "Thêm tài khoản" : "Sửa tài khoản";
         lblTitle.Text = Text;
         txtUsername.Text = value.Username; txtUsername.ReadOnly = value.Id is not null;
         txtFullName.Text = value.FullName;
+        txtEmail.Text = value.Email ?? "";
         cboRole.FormattingEnabled = true;
         cboRole.Items.AddRange(new object[] { "Admin", "NhanVien", "SinhVien" });
         cboRole.Format += (_, e) => e.Value = e.ListItem?.ToString() switch {
@@ -31,13 +37,15 @@ public partial class UserAccountEditDialog : Form
         chkEnabled.Checked = value.Enabled;
         cboRole.SelectedIndexChanged += (_, _) => UpdateStudentChoice();
         UpdateStudentChoice();
-        lblMessage.Text = value.Id is null ? "Mật khẩu mới: 8–128 ký tự." : "Để trống mật khẩu mới nếu muốn giữ mật khẩu hiện tại.";
+        lblMessage.Text = value.Id is null ? "Mật khẩu 8–128 ký tự, có hoa, thường, số, ký tự đặc biệt; không có khoảng trắng." : "Để trống mật khẩu mới nếu muốn giữ mật khẩu hiện tại.";
     }
+
     private void UpdateStudentChoice() => cboStudent.Enabled = Convert.ToString(cboRole.SelectedItem) == "SinhVien";
     private async void Save_Click(object? sender, EventArgs e)
     {
         if (_busy || _value is null || _service is null) return;
         _value.Username = txtUsername.Text.Trim(); _value.FullName = txtFullName.Text;
+        _value.Email = txtEmail.Text;
         _value.Role = Convert.ToString(cboRole.SelectedItem) ?? "";
         _value.Enabled = chkEnabled.Checked;
         _value.StudentId = (cboStudent.SelectedItem as StudentAccountChoice)?.Id;

@@ -46,7 +46,7 @@ partial class RoomEditDialog
         lblTenPhong = new Label();
         txtTenPhong = new TextBox();
         lblToa = new Label();
-        cboToa = new ComboBox();
+        cboToa = new QuanLyKyTucXa.WinForms.Helpers.CleanComboBox();
         lblTang = new Label();
         nudTang = new NumericUpDown();
         lblLoaiPhong = new Label();

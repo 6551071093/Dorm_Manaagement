@@ -28,8 +28,8 @@ public partial class FrmMain
         handoff.Click += async (_, _) => await SaveDataHandoffAsync(handoff);
         mnuSystem.DropDownItems.Add(handoff);
         var password = new ToolStripMenuItem("Đổi mật khẩu") { Name = "mnuChangePassword" };
-        password.Click += async (_, _) => {
-            if (!await EnsureSessionAsync() || _session is null) return;
+        password.Click += (_, _) => {
+            if (_session?.IsActive != true) return;
             using var dialog = new ChangePasswordDialog(new AuthService(() => AppDbContextFactory.Create(_connectionString)), _session);
             if (dialog.ShowDialog(this) == DialogResult.OK) MessageBox.Show(this, "Đã đổi mật khẩu.", "Tài khoản", MessageBoxButtons.OK, MessageBoxIcon.Information);
         };

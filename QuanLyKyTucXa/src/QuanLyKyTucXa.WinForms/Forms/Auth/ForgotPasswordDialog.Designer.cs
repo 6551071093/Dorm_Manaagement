@@ -2,6 +2,10 @@
 namespace QuanLyKyTucXa.WinForms.Forms.Auth;
 partial class ForgotPasswordDialog
 {
+    private TextBox txtEmail = null!;
+    private Label labelEmail = null!;
+    private Panel otpEntry = null!;
+    private Button btnSendOtp = null!;
     private System.ComponentModel.IContainer? components;
     private Panel root = null!, fields = null!, heading = null!, footer = null!, actions = null!;
     private Label lblTitle = null!, lblSubtitle = null!, lblNotice = null!, lblMessage = null!, lblFooter = null!;
@@ -9,7 +13,7 @@ partial class ForgotPasswordDialog
     private CheckBox chkShowPassword = null!;
     private LoginGlyph homeGlyph = null!;
     private TextBox txtUsername = null!; private Label label0 = null!; private LoginInputPanel box0 = null!; private LoginGlyph glyph0 = null!;
-private TextBox txtRecovery = null!; private Label label1 = null!; private LoginInputPanel box1 = null!; private LoginGlyph glyph1 = null!;
+private TextBox txtOtp = null!; private Label label1 = null!; private LoginInputPanel box1 = null!; private LoginGlyph glyph1 = null!;
 private TextBox txtPassword = null!; private Label label2 = null!; private LoginInputPanel box2 = null!; private LoginGlyph glyph2 = null!;
 private TextBox txtConfirm = null!; private Label label3 = null!; private LoginInputPanel box3 = null!; private LoginGlyph glyph3 = null!;
     protected override void Dispose(bool disposing) { if (disposing) components?.Dispose(); base.Dispose(disposing); }
@@ -20,7 +24,7 @@ private TextBox txtConfirm = null!; private Label label3 = null!; private LoginI
         lblTitle = new Label(); lblSubtitle = new Label(); lblNotice = new Label(); lblMessage = new Label(); lblFooter = new Label();
         btnSubmit = new LoginActionButton(); btnCancel = new LoginActionButton(); chkShowPassword = new CheckBox(); homeGlyph = new LoginGlyph();
         txtUsername = new TextBox(); label0 = new Label(); box0 = new LoginInputPanel(); glyph0 = new LoginGlyph();
-txtRecovery = new TextBox(); label1 = new Label(); box1 = new LoginInputPanel(); glyph1 = new LoginGlyph();
+txtOtp = new TextBox(); label1 = new Label(); box1 = new LoginInputPanel(); glyph1 = new LoginGlyph();
 txtPassword = new TextBox(); label2 = new Label(); box2 = new LoginInputPanel(); glyph2 = new LoginGlyph();
 txtConfirm = new TextBox(); label3 = new Label(); box3 = new LoginInputPanel(); glyph3 = new LoginGlyph();
         SuspendLayout(); root.SuspendLayout(); fields.SuspendLayout(); heading.SuspendLayout(); footer.SuspendLayout(); actions.SuspendLayout();
@@ -33,12 +37,12 @@ txtConfirm = new TextBox(); label3 = new Label(); box3 = new LoginInputPanel(); 
         lblSubtitle.ForeColor = Color.White; lblSubtitle.Location = new Point(134, 77); lblSubtitle.Size = new Size(500, 25);
         heading.Controls.Add(homeGlyph); heading.Controls.Add(lblTitle); heading.Controls.Add(lblSubtitle);
         footer.Dock = DockStyle.Bottom; footer.Height = 64; footer.BackColor = Color.FromArgb(243, 247, 254);
-        lblFooter.Text = "Sau khi đặt lại mật khẩu, hãy lưu mã khôi phục mới được cấp."; lblFooter.Font = new Font("Segoe UI", 9.5F);
+        lblFooter.Text = "OTP hết hiệu lực sau khi đặt lại mật khẩu thành công."; lblFooter.Font = new Font("Segoe UI", 9.5F);
         lblFooter.ForeColor = Color.FromArgb(85, 111, 143); lblFooter.Dock = DockStyle.Fill; lblFooter.TextAlign = ContentAlignment.MiddleCenter;
         footer.Controls.Add(lblFooter);
         root.Dock = DockStyle.Fill; root.BackColor = Color.White;
         fields.Location = new Point(52, 16); fields.Size = new Size(606, 526);
-        lblNotice.Text = "Sử dụng mã khôi phục đã lưu. Nếu mất mã hoặc chưa có mã, liên hệ Admin để được hỗ trợ."; lblNotice.Location = new Point(2, 0); lblNotice.Size = new Size(602, 52);
+        lblNotice.Text = "Nhập email đã lưu trong tài khoản để nhận OTP đặt lại mật khẩu."; lblNotice.Location = new Point(2, 0); lblNotice.Size = new Size(602, 52);
         lblNotice.Padding = new Padding(12, 9, 12, 5); lblNotice.BackColor = Color.FromArgb(239, 246, 255);
         lblNotice.ForeColor = Color.FromArgb(54, 91, 137); lblNotice.Font = new Font("Segoe UI", 9.5F);
         fields.Controls.Add(lblNotice);
@@ -47,12 +51,12 @@ box0.Location = new Point(0, 88); box0.Size = new Size(606, 52); box0.TabIndex =
 txtUsername.Name = "txtUsername"; txtUsername.BorderStyle = BorderStyle.None; txtUsername.Location = new Point(48, 15); txtUsername.Size = new Size(538, 24); txtUsername.Font = new Font("Segoe UI", 11F); txtUsername.TabIndex = 0; txtUsername.MaxLength = 50; txtUsername.PlaceholderText = "Nhập tên đăng nhập";
 glyph0.Kind = LoginGlyphKind.User; glyph0.ForeColor = Color.FromArgb(109, 128, 151); glyph0.Location = new Point(21, 16); glyph0.Size = new Size(18, 18);
 box0.Controls.Add(txtUsername); box0.Controls.Add(glyph0); fields.Controls.Add(label0); fields.Controls.Add(box0);
-label1.Text = "Mã khôi phục"; label1.Font = new Font("Segoe UI", 10F, FontStyle.Bold); label1.Location = new Point(2, 148); label1.Size = new Size(602, 24);
+label1.Text = "Mã OTP"; label1.Font = new Font("Segoe UI", 10F, FontStyle.Bold); label1.Location = new Point(2, 148); label1.Size = new Size(602, 24);
 box1.Location = new Point(0, 172); box1.Size = new Size(606, 52); box1.TabIndex = 1;
-txtRecovery.Name = "txtRecovery"; txtRecovery.BorderStyle = BorderStyle.None; txtRecovery.Location = new Point(48, 15); txtRecovery.Size = new Size(538, 24); txtRecovery.Font = new Font("Segoe UI", 11F); txtRecovery.TabIndex = 0; txtRecovery.MaxLength = 48; txtRecovery.PlaceholderText = "Nhập mã khôi phục (mã mới có 16 ký tự)";
-txtRecovery.UseSystemPasswordChar = true;
+txtOtp.Name = "txtOtp"; txtOtp.BorderStyle = BorderStyle.None; txtOtp.Location = new Point(48, 15); txtOtp.Size = new Size(538, 24); txtOtp.Font = new Font("Segoe UI", 11F); txtOtp.TabIndex = 0; txtOtp.MaxLength = 6; txtOtp.PlaceholderText = "Nhập OTP 6 chữ số";
+txtOtp.UseSystemPasswordChar = true;
 glyph1.Kind = LoginGlyphKind.Key; glyph1.ForeColor = Color.FromArgb(109, 128, 151); glyph1.Location = new Point(21, 16); glyph1.Size = new Size(18, 18);
-box1.Controls.Add(txtRecovery); box1.Controls.Add(glyph1); fields.Controls.Add(label1); fields.Controls.Add(box1);
+box1.Controls.Add(txtOtp); box1.Controls.Add(glyph1); fields.Controls.Add(label1); fields.Controls.Add(box1);
 label2.Text = "Mật khẩu mới"; label2.Font = new Font("Segoe UI", 10F, FontStyle.Bold); label2.Location = new Point(2, 232); label2.Size = new Size(602, 24);
 box2.Location = new Point(0, 256); box2.Size = new Size(606, 52); box2.TabIndex = 2;
 txtPassword.Name = "txtPassword"; txtPassword.BorderStyle = BorderStyle.None; txtPassword.Location = new Point(48, 15); txtPassword.Size = new Size(538, 24); txtPassword.Font = new Font("Segoe UI", 11F); txtPassword.TabIndex = 0; txtPassword.MaxLength = 128; txtPassword.PlaceholderText = "Tạo mật khẩu mới từ 8 đến 128 ký tự";
@@ -81,6 +85,14 @@ box3.Controls.Add(txtConfirm); box3.Controls.Add(glyph3); fields.Controls.Add(la
         AutoScaleDimensions = new SizeF(96F, 96F); AutoScaleMode = AutoScaleMode.Dpi;
         ClientSize = new Size(710, 740); StartPosition = FormStartPosition.CenterParent;
         FormBorderStyle = FormBorderStyle.FixedDialog; MinimizeBox = false; MaximizeBox = false; ShowIcon = false;
+        txtEmail = new TextBox { Name="txtEmail", MaxLength=100, PlaceholderText="Email đã đăng ký tài khoản" };
+        labelEmail = new Label {Text="Email *"};
+        label1.Text="Mã OTP *"; txtOtp.MaxLength=6; txtOtp.PlaceholderText="Nhập 6 chữ số";txtOtp.BorderStyle=BorderStyle.None;
+        otpEntry = new QuanLyKyTucXa.WinForms.Helpers.OtpCodeInput();
+        btnSendOtp = new Button {Text="Gửi OTP", Dock=DockStyle.Right, Width=100, FlatStyle=FlatStyle.Flat, BackColor=Color.FromArgb(23,101,194), ForeColor=Color.White};
+        btnSendOtp.FlatAppearance.BorderSize=0;
+        txtOtp.Dock=DockStyle.Fill;otpEntry.Controls.Add(txtOtp);otpEntry.Controls.Add(btnSendOtp);
+        lblNotice.Text="Nhập đúng tên đăng nhập và email đã lưu, bấm Gửi OTP rồi kiểm tra Hộp thư/Spam. Mã có hạn 5 phút và chỉ dùng một lần.";
         AcceptButton = btnSubmit; CancelButton = btnCancel; Text = "KTX Home – Quên mật khẩu"; Name = "ForgotPasswordDialog";
         FormClosing += Busy_FormClosing;
         actions.ResumeLayout(false); heading.ResumeLayout(false); footer.ResumeLayout(false);

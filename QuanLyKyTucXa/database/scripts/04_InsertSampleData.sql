@@ -1,4 +1,4 @@
-﻿-- ============================================================================
+-- ============================================================================
 -- DỰ ÁN: QUẢN LÝ KÝ TÚC XÁ (QuanLyKyTucXa)
 -- HỌC PHẦN: LẬP TRÌNH TRỰC QUAN (LTTQ) - .NET 9 & C# 12/13
 -- FILE: 04_InsertSampleData.sql
@@ -15,6 +15,7 @@ GO
 -- CẢNH BÁO: FILE NÀY NẠP LẠI DỮ LIỆU MẪU VÀ XÓA DỮ LIỆU CŨ.
 -- Chỉ tạo/reset Admin: dùng 06_ResetDemoAccounts.sql.
 -- XÓA DỮ LIỆU CŨ THEO THỨ TỰ RÀNG BUỘC
+IF OBJECT_ID(N'dbo.TaiKhoanOtp',N'U') IS NOT NULL EXEC(N'DELETE dbo.TaiKhoanOtp');
 IF OBJECT_ID(N'dbo.TaiKhoanKhoiPhuc', N'U') IS NOT NULL
     EXEC(N'DELETE FROM dbo.TaiKhoanKhoiPhuc');
 DELETE FROM dbo.ChiTietHoaDon;

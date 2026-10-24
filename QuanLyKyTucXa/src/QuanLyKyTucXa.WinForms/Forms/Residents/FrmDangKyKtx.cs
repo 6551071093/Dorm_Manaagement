@@ -17,14 +17,14 @@ public sealed partial class FrmDangKyKtx : Form
 
     protected override void OnLoad(EventArgs e)
     {
-        ApplyClassicLayoutScale();
+
         base.OnLoad(e);
     }
 
     protected override void OnDpiChangedAfterParent(EventArgs e)
     {
         base.OnDpiChangedAfterParent(e);
-        if (tlpRoot is not null) ApplyClassicLayoutScale();
+
     }
     private void ApplyClassicLayoutScale()
     {
@@ -71,6 +71,7 @@ public sealed partial class FrmDangKyKtx : Form
     public FrmDangKyKtx()
     {
         InitializeComponent();
+        QuanLyKyTucXa.WinForms.Helpers.ModernDialog.Install(this, tlpFields, btnGuiDon, btnClose, lblMessage, lblNotice);
         cboSinhVien.FormattingEnabled = true;
         cboSinhVien.DropDownStyle = ComboBoxStyle.DropDownList;
         cboSinhVien.Format += (_, e) => { if (e.ListItem is SinhVien s) e.Value = $"{s.MaSv} — {s.HoTen}"; };
@@ -106,7 +107,7 @@ public sealed partial class FrmDangKyKtx : Form
         var previousId = (cboSinhVien.SelectedItem as SinhVien)?.MaSv;
         try
         {
-            var students = await _service.GetEligibleStudentsAsync();
+            var students = await Task.Run(() => _service.GetEligibleStudentsAsync());
             if (IsDisposed || Disposing) return;
             cboSinhVien.DisplayMember = nameof(SinhVien.HoTen);
             cboSinhVien.DataSource = students;
@@ -133,7 +134,7 @@ public sealed partial class FrmDangKyKtx : Form
         var studentId = (cboSinhVien.SelectedItem as SinhVien)?.MaSv;
         try
         {
-            var rooms = studentId is null ? new List<RoomChoice>() : await _service.GetRoomsAsync(studentId);
+            var rooms = studentId is null ? new List<RoomChoice>() : await Task.Run(() => _service.GetRoomsAsync(studentId));
             if (IsDisposed || Disposing || version != _roomRequestVersion) return;
             rooms.Insert(0, new RoomChoice("", "", 0, 0));
             cboPhong.DataSource = rooms;

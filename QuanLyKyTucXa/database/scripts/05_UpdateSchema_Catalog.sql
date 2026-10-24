@@ -93,3 +93,30 @@ BEGIN CATCH
  THROW;
 END CATCH;
 GO
+
+-- OTP qua email: mã băm, hết hạn 5 phút và giới hạn số lần thử/gửi.
+IF OBJECT_ID(N'dbo.TaiKhoanOtp',N'U') IS NULL
+BEGIN
+ CREATE TABLE dbo.TaiKhoanOtp(
+  MaNguoiDung int NOT NULL CONSTRAINT PK_TaiKhoanOtp PRIMARY KEY,
+  CodeHash varbinary(32) NOT NULL,Salt varbinary(16) NOT NULL,
+  ExpiresAt datetime2 NOT NULL,Attempts int NOT NULL,
+  SentAt datetime2 NOT NULL,WindowStartedAt datetime2 NOT NULL,SendCount int NOT NULL,
+  Ready bit NOT NULL,Email nvarchar(100) NOT NULL,Credential varbinary(32) NOT NULL,
+  CONSTRAINT FK_TaiKhoanOtp_NguoiDung FOREIGN KEY(MaNguoiDung) REFERENCES dbo.NguoiDung(MaNguoiDung),
+  CONSTRAINT CK_TaiKhoanOtp_Attempts CHECK(Attempts BETWEEN 0 AND 5),
+  CONSTRAINT CK_TaiKhoanOtp_SendCount CHECK(SendCount BETWEEN 1 AND 5)
+ );
+END;
+
+GO
+
+-- Phân biệt OTP chưa xác nhận, phiên đã xác nhận và phiên đã dùng.
+IF COL_LENGTH(N'dbo.TaiKhoanOtp',N'Stage') IS NULL
+BEGIN
+ ALTER TABLE dbo.TaiKhoanOtp ADD Stage int NOT NULL CONSTRAINT DF_TaiKhoanOtp_Stage DEFAULT 0;
+END;
+IF OBJECT_ID(N'dbo.CK_TaiKhoanOtp_Stage',N'C') IS NULL
+ EXEC(N'ALTER TABLE dbo.TaiKhoanOtp ADD CONSTRAINT CK_TaiKhoanOtp_Stage CHECK(Stage BETWEEN 0 AND 2)');
+
+GO

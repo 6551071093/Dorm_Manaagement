@@ -38,10 +38,7 @@ public partial class FrmPhong
         if (!QuanLyKyTucXa.Infrastructure.Security.AuthPolicy.Can(_session, QuanLyKyTucXa.Infrastructure.Security.AppPermission.ConfigureRooms))
             throw new UnauthorizedAccessException("Chỉ Admin được thêm hoặc sửa cấu hình phòng.");
         var service = RoomService;
-        var towers = await service.GetTowersAsync();
-        if (towers.Count == 0) throw new InvalidOperationException("Chưa có tòa nhà. Cần khai báo tòa nhà trước khi thêm phòng.");
-        var value = id is null ? new Phong() : await service.GetAsync(id);
-        using var dialog = new RoomEditDialog(value, id is null, towers, service);
+        using var dialog = new RoomEditDialog(service, id);
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
         await RefreshViewAsync();
         foreach (DataGridViewRow row in dgvPhong.Rows)

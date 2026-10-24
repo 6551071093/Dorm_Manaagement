@@ -65,9 +65,7 @@ public partial class FrmNguoiDung : Form
     {
         if (_busy || _service is null) return;
         await RunAsync(async () => {
-            var value = id is null ? new UserAccountEdit() : await _service.GetAsync(id.Value);
-            var choices = await _service.StudentChoicesAsync(id);
-            using var dialog = new UserAccountEditDialog(value, choices, _service);
+            using var dialog = new UserAccountEditDialog(_service, id);
             if (dialog.ShowDialog(this) != DialogResult.OK) return;
             _users = await _service.ListAsync(); ApplyFilter();
         });

@@ -6,7 +6,7 @@ public sealed partial class ReasonDialog : Form
     public ReasonDialog()
     {
         InitializeComponent();
-        QuanLyKyTucXa.WinForms.Helpers.DialogLayout.ConfigureFixed(this, btnConfirm, btnCancel);
+        QuanLyKyTucXa.WinForms.Helpers.ModernDialog.InstallCustom(this, new TableLayoutPanel(), btnConfirm, btnCancel, null, null, new QuanLyKyTucXa.WinForms.Helpers.ModernDialog.Field(lblPrompt, txtReason, true));
         txtReason.MaxLength = 200;
         btnConfirm.DialogResult = DialogResult.None;
         btnConfirm.Click += (_, _) => {

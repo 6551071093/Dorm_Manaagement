@@ -17,6 +17,7 @@ public sealed class UserAccountEdit
     public int? Id { get; set; }
     public string Username { get; set; } = "";
     public string FullName { get; set; } = "";
+    public string? Email { get; set; }
     public string Role { get; set; } = "NhanVien";
     public bool Enabled { get; set; } = true;
     public string? StudentId { get; set; }
@@ -47,7 +48,7 @@ public sealed class NguoiDungService(Func<AppDbContext> createDb, AuthSession se
         var user = await db.NguoiDungs.AsNoTracking().SingleOrDefaultAsync(x => x.MaNguoiDung == id)
             ?? throw new InvalidOperationException("Tài khoản không còn tồn tại.");
         var studentId = await db.SinhViens.Where(x => x.MaNguoiDung == id).OrderBy(x => x.MaSv).Select(x => x.MaSv).FirstOrDefaultAsync();
-        return new UserAccountEdit { Id = id, Username = user.TenDangNhap, FullName = user.HoTen, Role = user.VaiTro, Enabled = user.TrangThai, StudentId = studentId };
+        return new UserAccountEdit { Id = id, Username = user.TenDangNhap, FullName = user.HoTen, Email = user.Email, Role = user.VaiTro, Enabled = user.TrangThai, StudentId = studentId };
     }
     public async Task<List<StudentAccountChoice>> StudentChoicesAsync(int? userId)
     {
@@ -59,11 +60,10 @@ public sealed class NguoiDungService(Func<AppDbContext> createDb, AuthSession se
 
     public async Task SaveAsync(UserAccountEdit value)
     {
-        value.Username = (value.Username ?? "").Trim();
-        value.FullName = (value.FullName ?? "").Trim();
-        if (!Regex.IsMatch(value.Username, @"^[A-Za-z0-9_.@-]{3,50}$"))
-            throw new InvalidOperationException("Tên đăng nhập gồm 3–50 chữ cái không dấu, số hoặc ký tự . _ @ -.");
-        if (value.FullName.Length is < 1 or > 100) throw new InvalidOperationException("Họ tên phải có từ 1 đến 100 ký tự.");
+        value.Username = AccountValidation.Username(value.Username);
+        value.FullName = AccountValidation.FullName(value.FullName);
+        value.Email = string.IsNullOrWhiteSpace(value.Email) ? null : AccountValidation.Email(value.Email);
+        if(value.Role=="SinhVien" && value.Email is null && value.Id is null) throw new InvalidOperationException("Tài khoản Sinh viên cần email đang sử dụng để nhận OTP.");
         if (value.Role is not ("Admin" or "NhanVien" or "SinhVien")) throw new InvalidOperationException("Vai trò không hợp lệ.");
         if (value.Id is null || !string.IsNullOrEmpty(value.NewPassword)) PasswordHash.ValidateNew(value.NewPassword ?? "");
         var passwordHash = string.IsNullOrEmpty(value.NewPassword) ? null : await Task.Run(() => PasswordHash.Create(value.NewPassword));
@@ -80,6 +80,8 @@ public sealed class NguoiDungService(Func<AppDbContext> createDb, AuthSession se
             throw new InvalidOperationException("Phải giữ lại ít nhất một tài khoản Admin đang hoạt động.");
         if (await db.NguoiDungs.AnyAsync(x => x.TenDangNhap == value.Username && (value.Id == null || x.MaNguoiDung != value.Id)))
             throw new InvalidOperationException("Tên đăng nhập đã tồn tại.");
+        if(value.Email is not null && await db.NguoiDungs.AnyAsync(x=>x.Email==value.Email && (value.Id==null || x.MaNguoiDung!=value.Id)))
+            throw new InvalidOperationException("Email đã được dùng cho tài khoản khác.");
         SinhVien? student = null;
         if (value.Role == "SinhVien")
         {
@@ -93,7 +95,8 @@ public sealed class NguoiDungService(Func<AppDbContext> createDb, AuthSession se
             user = new NguoiDung { TenDangNhap = value.Username, NgayTao = DateTime.Now, MatKhauHash = passwordHash! };
             db.NguoiDungs.Add(user);
         }
-        user.HoTen = value.FullName; user.VaiTro = value.Role; user.TrangThai = value.Enabled;
+        var emailChanged = !string.Equals(user.Email, value.Email, StringComparison.OrdinalIgnoreCase);
+        user.HoTen = value.FullName; user.Email = value.Email; user.VaiTro = value.Role; user.TrangThai = value.Enabled;
         if (passwordHash is not null) user.MatKhauHash = passwordHash;
         if (value.Id is not null)
         {
@@ -105,6 +108,8 @@ public sealed class NguoiDungService(Func<AppDbContext> createDb, AuthSession se
         // Admin đặt lại mật khẩu sẽ thu hồi mã khôi phục cũ của tài khoản đó.
         if (value.Id is not null && passwordHash is not null)
             await db.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM dbo.TaiKhoanKhoiPhuc WHERE MaNguoiDung = {user.MaNguoiDung}");
+        if(value.Id is not null && (passwordHash is not null || emailChanged))
+            await db.Database.ExecuteSqlInterpolatedAsync($"IF OBJECT_ID(N'dbo.TaiKhoanOtp',N'U') IS NOT NULL DELETE dbo.TaiKhoanOtp WHERE MaNguoiDung={user.MaNguoiDung}");
         // Admin mở khóa/kích hoạt sẽ xóa bộ đếm sai; lần đăng nhập tiếp theo bắt đầu từ 0.
         if (value.Enabled)
             await db.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM dbo.TaiKhoanDangNhap WHERE MaNguoiDung = {user.MaNguoiDung}");

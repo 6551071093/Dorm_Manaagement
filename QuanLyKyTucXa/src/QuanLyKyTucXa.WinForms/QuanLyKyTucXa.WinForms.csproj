@@ -106,8 +106,6 @@
     <Compile Update="Forms\Auth\RegisterDialog.Designer.cs"><DependentUpon>RegisterDialog.cs</DependentUpon></Compile>
     <Compile Update="Forms\Auth\ForgotPasswordDialog.cs"><SubType>Form</SubType></Compile>
     <Compile Update="Forms\Auth\ForgotPasswordDialog.Designer.cs"><DependentUpon>ForgotPasswordDialog.cs</DependentUpon></Compile>
-    <Compile Update="Forms\Auth\RecoveryCodeDialog.cs"><SubType>Form</SubType></Compile>
-    <Compile Update="Forms\Auth\RecoveryCodeDialog.Designer.cs"><DependentUpon>RecoveryCodeDialog.cs</DependentUpon></Compile>
   </ItemGroup>
   <ItemGroup>
 

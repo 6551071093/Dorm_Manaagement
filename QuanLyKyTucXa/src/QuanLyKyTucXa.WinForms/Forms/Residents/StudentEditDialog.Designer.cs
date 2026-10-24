@@ -50,9 +50,9 @@ partial class StudentEditDialog
         lblHoTen = new Label();
         txtHoTen = new TextBox();
         lblNgaySinh = new Label();
-        dtpNgaySinh = new DateTimePicker();
+        dtpNgaySinh = new QuanLyKyTucXa.WinForms.Helpers.CleanDateTimePicker();
         lblGioiTinh = new Label();
-        cboGioiTinh = new ComboBox();
+        cboGioiTinh = new QuanLyKyTucXa.WinForms.Helpers.CleanComboBox();
         lblCccd = new Label();
         txtCccd = new TextBox();
         lblSoDienThoai = new Label();
@@ -60,9 +60,9 @@ partial class StudentEditDialog
         lblEmail = new Label();
         txtEmail = new TextBox();
         lblLop = new Label();
-        txtLop = new ComboBox();
+        txtLop = new QuanLyKyTucXa.WinForms.Helpers.CleanComboBox();
         lblKhoa = new Label();
-        txtKhoa = new ComboBox();
+        txtKhoa = new QuanLyKyTucXa.WinForms.Helpers.CleanComboBox();
         lblQueQuan = new Label();
         txtQueQuan = new TextBox();
         lblTrangThai = new Label();

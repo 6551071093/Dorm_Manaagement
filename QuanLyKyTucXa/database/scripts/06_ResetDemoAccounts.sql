@@ -1,12 +1,12 @@
-﻿-- TÙY CHỌN: ĐẶT LẠI TÀI KHOẢN DEMO. KHÔNG CHẠY MỖI LẦN KHỞI ĐỘNG.
+-- TÙY CHỌN: ĐẶT LẠI TÀI KHOẢN DEMO. KHÔNG CHẠY MỖI LẦN KHỞI ĐỘNG.
 -- Chạy 05_UpdateSchema_Catalog.sql trước. Không xóa dữ liệu nghiệp vụ.
 -- Phần A: admin / Admin@123. Phần B: nhanvien01 / NhanVien@123; sv2026001-003 / SinhVien@123.
--- Chỉ chạy khi chấp nhận đặt lại mật khẩu và mã khôi phục của các tài khoản demo.
+-- Chỉ chạy khi chấp nhận đặt lại mật khẩu và thu hồi OTP cũ của các tài khoản demo.
 
 -- PHẦN A: ADMIN
 -- DÙNG CHO DATABASE DEMO CỦA NHÓM.
 -- Chạy thủ công file này sẽ tạo/đặt lại admin / Admin@123, mở khóa Admin
--- và thay mã khôi phục. Không xóa dữ liệu sinh viên/phòng/hợp đồng.
+-- và thu hồi OTP cũ. Không xóa dữ liệu sinh viên/phòng/hợp đồng.
 -- Chạy 05_UpdateSchema_Catalog.sql trước. Ứng dụng không tự chạy script này.
 USE [QuanLyKTXDB];
 GO
@@ -16,8 +16,6 @@ BEGIN TRY
     BEGIN TRANSACTION;
     IF OBJECT_ID(N'dbo.NguoiDung', N'U') IS NULL
         THROW 51000, N'Chưa có bảng NguoiDung. Hãy khởi tạo cấu trúc database trước.', 1;
-    IF OBJECT_ID(N'dbo.TaiKhoanKhoiPhuc', N'U') IS NULL
-        THROW 51001, N'Hãy chạy 05_UpdateSchema_Catalog.sql trước.', 1;
     DECLARE @Id int, @Role nvarchar(20);
     SELECT @Id = MaNguoiDung, @Role = VaiTro FROM dbo.NguoiDung WITH (UPDLOCK, HOLDLOCK) WHERE TenDangNhap = N'admin';
     IF @Id IS NOT NULL AND @Role <> N'Admin'
@@ -30,14 +28,11 @@ BEGIN TRY
     END
     ELSE
         UPDATE dbo.NguoiDung SET MatKhauHash = N'PBKDF2-SHA256$600000$gltA27sVEvlyhPpy64Hi8w==$8bczWZFRkePj1TjvhwETvGrLTzToYSYxjOlYJr3PcWk=', TrangThai = 1 WHERE MaNguoiDung = @Id;
-    DECLARE @Recovery varchar(16) = CONVERT(varchar(16), CRYPT_GEN_RANDOM(8), 2);
-    DECLARE @RecoveryHash char(64) = CONVERT(char(64), HASHBYTES('SHA2_256', @Recovery), 2);
-    DELETE dbo.TaiKhoanKhoiPhuc WHERE MaNguoiDung = @Id;
-    INSERT dbo.TaiKhoanKhoiPhuc (MaNguoiDung, MaKhoiPhucHash) VALUES (@Id, @RecoveryHash);
+    IF OBJECT_ID(N'dbo.TaiKhoanOtp', N'U') IS NOT NULL EXEC sp_executesql N'DELETE dbo.TaiKhoanOtp WHERE MaNguoiDung = @UserId', N'@UserId int', @UserId = @Id;
     IF OBJECT_ID(N'dbo.TaiKhoanDangNhap', N'U') IS NOT NULL
         EXEC sp_executesql N'DELETE dbo.TaiKhoanDangNhap WHERE MaNguoiDung = @UserId', N'@UserId int', @UserId = @Id;
     COMMIT TRANSACTION;
-    SELECT N'admin' AS TenDangNhap, N'Admin@123' AS MatKhauDemo, @Recovery AS MaKhoiPhucMoi;
+    SELECT N'admin' AS TenDangNhap, N'Admin@123' AS MatKhauDemo;
 END TRY
 BEGIN CATCH
     IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
