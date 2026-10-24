@@ -72,7 +72,7 @@ public partial class ForgotPasswordDialog : Form
             {
                 var email=AccountValidation.Email(txtEmail.Text);
                 lblMessage.Text="Đang yêu cầu OTP...";
-                await _service.RequestPasswordOtpAsync(email);
+                await RequestOtpWithCooldownAsync(email);
                 _email=email;_grant="";_cooldown=60;txtOtp.Clear();ShowStep(ResetStep.Otp);
             }
             else if(_step==ResetStep.Otp)
@@ -99,14 +99,26 @@ public partial class ForgotPasswordDialog : Form
         }
         finally{if(!IsDisposed)SetBusy(false);}
     }
+    private async Task RequestOtpWithCooldownAsync(string email)
+    {
+        // Lỗi gửi SMTP cũng có thể đã ghi nhận lượt yêu cầu trong SQL.
+        // Chặn bấm lại ngay để tránh chuyển bước do yêu cầu bị giới hạn gửi.
+        var started=Environment.TickCount64;
+        try { await _service!.RequestPasswordOtpAsync(email); }
+        catch
+        {
+            _cooldown=Math.Max(_cooldown,Math.Max(0,60-(int)((Environment.TickCount64-started)/1000)));
+            throw;
+        }
+    }
     private async void ResendOtp_Click(object? sender,EventArgs e)
     {
         if(_busy || _cooldown>0 || _service is null || _step!=ResetStep.Otp)return;
         SetBusy(true);lblMessage.Text="Đang yêu cầu gửi lại OTP...";
         try
         {
-            await _service.RequestPasswordOtpAsync(_email);_cooldown=60;_grant="";txtOtp.Clear();
-            lblMessage.Text="Nếu email khớp tài khoản và còn lượt gửi, mã mới đã được gửi. Tối đa 5 lần/giờ.";
+            await RequestOtpWithCooldownAsync(_email);_cooldown=60;_grant="";txtOtp.Clear();
+            lblMessage.Text="Đã gửi yêu cầu. Nếu email khớp tài khoản và còn lượt gửi, kiểm tra Hộp thư/Spam để nhận mã mới.";
         }
         catch(Exception ex){lblMessage.Text=ex is InvalidOperationException?ex.Message:"Không gửi được OTP. Vui lòng thử lại.";}
         finally{SetBusy(false);}

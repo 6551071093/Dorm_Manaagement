@@ -61,3 +61,10 @@ Các ô mật khẩu và xác nhận dài toàn hàng, chỉ các ô của bư�
 Database mới/của thành viên chạy lại **05_UpdateSchema_Catalog.sql** để bổ sung cột Stage cho TaiKhoanOtp. Database máy hiện tại đã được cập nhật cột này. Không chạy lại 01/04 hoặc LatestData chỉ để cập nhật luồng OTP.
 
 Gửi thư thật cần mật khẩu ứng dụng Gmail hợp lệ trong cấu hình cục bộ. Lượt chỉnh luồng ba bước không tự gửi thư, không tự đặt lại tài khoản và không đọc/hiển thị mật khẩu SMTP.
+## Nút gửi lại và chẩn đoán Gmail
+
+- Nút Gửi lại dùng control bo góc, tự bố trí theo DPI và đủ rộng cho bộ đếm 60 giây; OTP hiển thị dạng số để người dùng kiểm tra trước khi xác nhận.
+- Gmail SMTP yêu cầu App Password 16 ký tự (bỏ khoảng trắng phân nhóm). Cấu hình sai sẽ báo rõ trước khi gửi; không thay bằng mật khẩu đăng nhập Gmail thông thường.
+- Gửi SMTP dùng TLS cổng 587 và hủy sau 25 giây; báo riêng lỗi xác thực, mạng, địa chỉ nhận hoặc quá thời gian chờ. Phản hồi SMTP gốc không hiển thị lên form.
+- Sau một lần gửi lỗi, chờ 60 giây trước khi thử lại vì yêu cầu có thể đã được ghi nhận trong SQL. Giới hạn 5 yêu cầu/giờ vẫn áp dụng.
+- Email nhận phải là email bảo mật đã lưu trong Tài khoản, không phải chỉ email liên hệ trong hồ sơ Sinh viên. Địa chỉ Gmail gửi chỉ là người gửi, không tự nhận OTP thay người dùng.
