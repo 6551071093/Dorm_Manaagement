@@ -54,7 +54,7 @@ box0.Controls.Add(txtUsername); box0.Controls.Add(glyph0); fields.Controls.Add(l
 label1.Text = "Mã OTP"; label1.Font = new Font("Segoe UI", 10F, FontStyle.Bold); label1.Location = new Point(2, 148); label1.Size = new Size(602, 24);
 box1.Location = new Point(0, 172); box1.Size = new Size(606, 52); box1.TabIndex = 1;
 txtOtp.Name = "txtOtp"; txtOtp.BorderStyle = BorderStyle.None; txtOtp.Location = new Point(48, 15); txtOtp.Size = new Size(538, 24); txtOtp.Font = new Font("Segoe UI", 11F); txtOtp.TabIndex = 0; txtOtp.MaxLength = 6; txtOtp.PlaceholderText = "Nhập OTP 6 chữ số";
-txtOtp.UseSystemPasswordChar = true;
+txtOtp.UseSystemPasswordChar = false;
 glyph1.Kind = LoginGlyphKind.Key; glyph1.ForeColor = Color.FromArgb(109, 128, 151); glyph1.Location = new Point(21, 16); glyph1.Size = new Size(18, 18);
 box1.Controls.Add(txtOtp); box1.Controls.Add(glyph1); fields.Controls.Add(label1); fields.Controls.Add(box1);
 label2.Text = "Mật khẩu mới"; label2.Font = new Font("Segoe UI", 10F, FontStyle.Bold); label2.Location = new Point(2, 232); label2.Size = new Size(602, 24);
@@ -89,7 +89,7 @@ box3.Controls.Add(txtConfirm); box3.Controls.Add(glyph3); fields.Controls.Add(la
         labelEmail = new Label {Text="Email *"};
         label1.Text="Mã OTP *"; txtOtp.MaxLength=6; txtOtp.PlaceholderText="Nhập 6 chữ số";txtOtp.BorderStyle=BorderStyle.None;
         otpEntry = new QuanLyKyTucXa.WinForms.Helpers.OtpCodeInput();
-        btnSendOtp = new Button {Text="Gửi OTP", Dock=DockStyle.Right, Width=100, FlatStyle=FlatStyle.Flat, BackColor=Color.FromArgb(23,101,194), ForeColor=Color.White};
+        btnSendOtp = new LoginActionButton {Text="Gửi lại OTP", Primary=true, Width=144, Height=36, Font=new Font("Segoe UI",9F,FontStyle.Bold), Cursor=Cursors.Hand, TabIndex=1};
         btnSendOtp.FlatAppearance.BorderSize=0;
         txtOtp.Dock=DockStyle.Fill;otpEntry.Controls.Add(txtOtp);otpEntry.Controls.Add(btnSendOtp);
         lblNotice.Text="Nhập đúng tên đăng nhập và email đã lưu, bấm Gửi OTP rồi kiểm tra Hộp thư/Spam. Mã có hạn 5 phút và chỉ dùng một lần.";
