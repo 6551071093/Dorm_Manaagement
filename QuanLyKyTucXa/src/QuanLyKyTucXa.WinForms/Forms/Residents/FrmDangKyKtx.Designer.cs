@@ -42,11 +42,11 @@ partial class FrmDangKyKtx
         pnlFormScroll = new Panel();
         tlpFields = new TableLayoutPanel();
         lblSinhVien = new Label();
-        cboSinhVien = new ComboBox();
+        cboSinhVien = new QuanLyKyTucXa.WinForms.Helpers.CleanComboBox();
         lblPhong = new Label();
-        cboPhong = new ComboBox();
+        cboPhong = new QuanLyKyTucXa.WinForms.Helpers.CleanComboBox();
         lblHocKy = new Label();
-        cboHocKy = new ComboBox();
+        cboHocKy = new QuanLyKyTucXa.WinForms.Helpers.CleanComboBox();
         lblNamHoc = new Label();
         txtNamHoc = new TextBox();
         lblGhiChu = new Label();

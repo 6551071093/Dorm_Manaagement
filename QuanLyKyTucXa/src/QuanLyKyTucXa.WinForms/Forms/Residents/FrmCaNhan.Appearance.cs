@@ -2,6 +2,7 @@ namespace QuanLyKyTucXa.WinForms.Forms.Residents;
 
 public partial class FrmCaNhan
 {
+    private int Px(int value) => (int)Math.Round(value * DeviceDpi / 96.0);
     protected override void OnLoad(EventArgs e)
     {
         ApplyPersonalLayout();
@@ -14,57 +15,88 @@ public partial class FrmCaNhan
     }
     private void ApplyPersonalLayout()
     {
-        int Px(int value) => (int)Math.Round(value * DeviceDpi / 96.0);
-        tlpRoot.Padding = new Padding(Px(20), Px(14), Px(20), Px(12));
-        tlpRoot.RowStyles[0].Height = Px(58);
-        tlpRoot.RowStyles[1].Height = Px(94);
-        tlpRoot.RowStyles[3].Height = Px(56);
-        grpProfile.Margin = new Padding(0, 0, 0, Px(14));
-        grpProfile.Padding = new Padding(Px(14), Px(8), Px(12), Px(10));
-        tabs.Margin = Padding.Empty;
-        tabs.ItemSize = new Size(Px(180), Px(32));
-        foreach (var page in new[] { tabRooms, tabBills, tabIncidents })
+        tlpRoot.Padding = new Padding(Px(24), Px(14), Px(24), Px(12));
+        tlpRoot.RowStyles[0].Height = Px(44);
+        tlpRoot.RowStyles[1].Height = Px(96);
+        tlpRoot.RowStyles[2].Height = 0;
+        tlpRoot.RowStyles[4].Height = Px(56);
+        profileCard.Margin = new Padding(0, 0, 0, Px(12));
+        profileCard.Padding = Padding.Empty;
+        profileText.Padding = Padding.Empty;
+        avatar.Dock = profileStatus.Dock = profileText.Dock = DockStyle.None;
+        profileCard.SizeChanged -= ProfileCard_SizeChanged;
+        profileCard.SizeChanged += ProfileCard_SizeChanged;
+        LayoutProfileCard();
+        navigation.Margin = new Padding(0, 0, 0, Px(12));
+        foreach (var button in new[] { navRooms, navBills, navIncidents })
         {
-            page.BackColor = BackColor;
-            page.Padding = new Padding(Px(1));
+            button.Font = new Font("Segoe UI", 10F);
+            button.Size = new Size(Px(button == navRooms ? 160 : 150), Px(36));
+            button.Margin = Padding.Empty;
         }
         foreach (var grid in new[] { gridRooms, gridBills, gridIncidents })
         {
             grid.EnableHeadersVisualStyles = false;
-            grid.BackgroundColor = Color.FromArgb(246, 246, 250);
-            grid.BorderStyle = BorderStyle.FixedSingle;
-            grid.GridColor = Color.FromArgb(216, 221, 230);
+            grid.BackgroundColor = Color.White;
+            grid.BorderStyle = BorderStyle.None;
+            grid.GridColor = Color.FromArgb(230, 237, 248);
             grid.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
-            grid.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
+            grid.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
             grid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            grid.ColumnHeadersHeight = Px(34);
-            grid.RowTemplate.Height = Px(35);
-            foreach (DataGridViewRow row in grid.Rows) row.Height = Px(35);
+            grid.ColumnHeadersHeight = Px(38);
+            grid.RowTemplate.Height = Px(38);
+            foreach (DataGridViewRow row in grid.Rows) row.Height = Px(38);
             grid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             grid.MultiSelect = false;
             grid.AllowUserToResizeRows = false;
             grid.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle {
-                BackColor = Color.FromArgb(231,237,248), ForeColor = Color.FromArgb(35,40,48),
-                SelectionBackColor = Color.FromArgb(231,237,248), SelectionForeColor = Color.FromArgb(35,40,48),
-                Font = new Font("Segoe UI", 11F, FontStyle.Bold), Padding = new Padding(Px(10),0,0,0), WrapMode = DataGridViewTriState.False
+                BackColor = Color.FromArgb(233,241,253), ForeColor = Color.FromArgb(30,74,128),
+                SelectionBackColor = Color.FromArgb(233,241,253), SelectionForeColor = Color.FromArgb(30,74,128),
+                Font = new Font("Segoe UI", 9.5F, FontStyle.Bold), Padding = new Padding(Px(14),0,0,0), WrapMode = DataGridViewTriState.False
             };
             grid.DefaultCellStyle = new DataGridViewCellStyle {
-                BackColor = Color.White, ForeColor = Color.FromArgb(45,51,59),
-                SelectionBackColor = Color.FromArgb(189,221,248), SelectionForeColor = Color.FromArgb(35,60,80),
-                Padding = new Padding(Px(10),0,0,0), WrapMode = DataGridViewTriState.False
+                BackColor = Color.White, ForeColor = Color.FromArgb(30,60,96),
+                SelectionBackColor = Color.FromArgb(215,233,254), SelectionForeColor = Color.FromArgb(20,60,106),
+                Font = new Font("Segoe UI", 10F), Padding = new Padding(Px(14),0,0,0), WrapMode = DataGridViewTriState.False
             };
-            grid.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(249,249,253);
+            grid.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(248,251,255);
+            foreach (DataGridViewColumn column in grid.Columns)
+            {
+                var property = column.DataPropertyName;
+                column.MinimumWidth = Px(property is "Thang" or "Nam" ? 68 : property == "TienPhong" ? 160 : 115);
+                column.FillWeight = property is "TieuDe" or "TenToa" ? 160 : property is "Thang" or "Nam" ? 60 : 100;
+                if (property is "BatDau" or "KetThuc" or "HanThanhToan" or "NgayBao") column.DefaultCellStyle.Format = "dd/MM/yyyy";
+                if (property is "TienPhong" or "TongTien" or "DaThu" or "ConNo") column.DefaultCellStyle.Format = "N0";
+            }
         }
         pnlFooter.Padding = new Padding(0,Px(12),0,0);
-        lblMessage.ForeColor = Color.FromArgb(100,116,139);
         foreach (var button in new[] { btnRefresh, btnReport })
         {
             button.Size = new Size(Px(button == btnReport ? 140 : 104),Px(36));
-            button.Margin = new Padding(Px(9),0,0,0);
-            button.FlatAppearance.BorderColor = Color.FromArgb(166,175,190);
+            button.Margin = new Padding(Px(8),0,0,0);
         }
-        btnReport.FlatAppearance.BorderSize = 0;
-        btnRefresh.BackColor = BackColor;
+        LayoutEmptyState();
+    }
+    private void ProfileCard_SizeChanged(object? sender, EventArgs e) => LayoutProfileCard();
+    private void LayoutProfileCard()
+    {
+        var inset = Px(18);
+        avatar.SetBounds(inset, Math.Max(0,(profileCard.Height-Px(52))/2), Px(52), Px(52));
+        profileStatus.SetBounds(Math.Max(inset,profileCard.Width-inset-Px(132)), Math.Max(0,(profileCard.Height-Px(26))/2), Px(132), Px(26));
+        var x = avatar.Right + Px(14);
+        profileText.SetBounds(x,Math.Max(0,(profileCard.Height-Px(52))/2),Math.Max(0,profileStatus.Left-Px(12)-x),Px(52));
+        lblName.Height = Px(28);
+    }
+    private void LayoutEmptyState()
+    {
+        if (emptyPanel is null || gridRooms is null || emptySymbol is null) return;
+        var header = ActiveGrid.ColumnHeadersHeight + 1;
+        var scrollbar = ActiveGrid.Controls.OfType<HScrollBar>().FirstOrDefault(s => s.Visible);
+        emptyPanel.SetBounds(1,header,Math.Max(0,tableCard.ClientSize.Width-2),Math.Max(0,tableCard.ClientSize.Height-header-1-(scrollbar?.Height??0)));
+        var y = Math.Max(Px(8),(emptyPanel.Height-Px(118))/2);
+        emptySymbol.SetBounds(Math.Max(0,(emptyPanel.Width-Px(48))/2),y,Px(48),Px(48));
+        lblEmptyTitle.SetBounds(Px(12),y+Px(56),Math.Max(0,emptyPanel.Width-Px(24)),Px(28));
+        lblEmptySubtitle.SetBounds(Px(16),y+Px(86),Math.Max(0,emptyPanel.Width-Px(32)),Px(44));
     }
     private void PersonalStatusFormatting(object? sender, DataGridViewCellFormattingEventArgs e)
     {
@@ -76,11 +108,5 @@ public partial class FrmCaNhan
         e.CellStyle.ForeColor = done ? Color.FromArgb(53,104,63) : warning ? Color.FromArgb(170,104,25) : Color.FromArgb(100,112,128);
         e.CellStyle.SelectionBackColor = e.CellStyle.BackColor;
         e.CellStyle.SelectionForeColor = e.CellStyle.ForeColor;
-    }
-    private void UpdateSectionCount()
-    {
-        var grid = tabs.SelectedTab == tabBills ? gridBills : tabs.SelectedTab == tabIncidents ? gridIncidents : gridRooms;
-        var unit = tabs.SelectedTab == tabBills ? "hóa đơn" : tabs.SelectedTab == tabIncidents ? "báo hỏng" : "hợp đồng";
-        lblMessage.Text = $"{grid.Rows.Count} {unit} • Chỉ hiển thị dữ liệu của bạn";
     }
 }

@@ -4,7 +4,7 @@ public partial class ReportIncidentDialog : Form
 {
     private readonly PersonalService? _service;
     private bool _busy;
-    public ReportIncidentDialog() { InitializeComponent(); QuanLyKyTucXa.WinForms.Helpers.DialogLayout.Configure(this, layout, actions); }
+    public ReportIncidentDialog() { InitializeComponent(); QuanLyKyTucXa.WinForms.Helpers.ModernDialog.InstallCustom(this, layout, btnSave, btnCancel, lblError, null, new(lblTitle, txtTitle, true), new(lblDescription, txtDescription, true)); }
     public ReportIncidentDialog(PersonalService service) : this() => _service = service;
     private async void Save_Click(object? sender, EventArgs e)
     {

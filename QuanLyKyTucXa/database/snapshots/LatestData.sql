@@ -38,6 +38,7 @@ DISABLE TRIGGER ALL ON dbo.[ThanhToan];
 DISABLE TRIGGER ALL ON dbo.[DanhMucKhoa];
 DISABLE TRIGGER ALL ON dbo.[DanhMucNganh];
 DISABLE TRIGGER ALL ON dbo.[DanhMucLop];
+IF OBJECT_ID(N'dbo.TaiKhoanOtp',N'U') IS NOT NULL EXEC(N'DELETE dbo.TaiKhoanOtp');
 IF OBJECT_ID(N'dbo.TaiKhoanKhoiPhuc',N'U') IS NOT NULL EXEC(N'DELETE dbo.TaiKhoanKhoiPhuc');
 IF OBJECT_ID(N'dbo.TaiKhoanDangNhap',N'U') IS NOT NULL EXEC(N'DELETE dbo.TaiKhoanDangNhap');
 DELETE FROM dbo.[DanhMucLop];

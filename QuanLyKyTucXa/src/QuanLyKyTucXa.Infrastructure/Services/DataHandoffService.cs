@@ -52,6 +52,7 @@ public sealed class DataHandoffService(Func<AppDbContext> createDb, AuthSession 
                     await writer.WriteLineAsync($"DISABLE TRIGGER ALL ON dbo.{Quote(table)};");
                 await writer.WriteLineAsync("IF OBJECT_ID(N'dbo.TaiKhoanKhoiPhuc',N'U') IS NOT NULL EXEC(N'DELETE dbo.TaiKhoanKhoiPhuc');");
                 await writer.WriteLineAsync("IF OBJECT_ID(N'dbo.TaiKhoanDangNhap',N'U') IS NOT NULL EXEC(N'DELETE dbo.TaiKhoanDangNhap');");
+                await writer.WriteLineAsync("IF OBJECT_ID(N'dbo.TaiKhoanOtp',N'U') IS NOT NULL EXEC(N'DELETE dbo.TaiKhoanOtp');");
                 foreach (var table in Tables.Reverse()) await writer.WriteLineAsync($"DELETE FROM dbo.{Quote(table)};");
                 foreach (var table in Tables)
                 {

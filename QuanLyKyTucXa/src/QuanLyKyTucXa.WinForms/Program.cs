@@ -17,10 +17,15 @@ internal static class Program
             var configuration = new ConfigurationBuilder().SetBasePath(AppContext.BaseDirectory).AddJsonFile("appsettings.json").AddJsonFile("appsettings.local.json", optional: true).AddEnvironmentVariables().Build();
             var fallback = configuration.GetConnectionString("KtxDb");
             if (string.IsNullOrWhiteSpace(fallback)) throw new InvalidOperationException("Thiếu cấu hình KtxDb.");
+            var sender = new SmtpOtpEmailSender(new SmtpOtpOptions(
+                configuration["Email:Host"] ?? "smtp.gmail.com",
+                int.TryParse(configuration["Email:Port"], out var emailPort) ? emailPort : 587,
+                configuration["Email:Username"] ?? "", configuration["Email:Password"] ?? "",
+                configuration["Email:FromAddress"] ?? "", configuration["Email:FromName"] ?? "KTX Home"));
             while (true)
             {
                 var connectionString = fallback;
-                var auth = new AuthService(() => AppDbContextFactory.Create(connectionString));
+                var auth = new AuthService(() => AppDbContextFactory.Create(connectionString), sender);
                 using var login = new FrmLogin(auth);
                 Application.Run(login);
 

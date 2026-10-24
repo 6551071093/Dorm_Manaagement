@@ -2,6 +2,8 @@
 namespace QuanLyKyTucXa.WinForms.Forms.Users;
 partial class UserAccountEditDialog
 {
+    private TextBox txtEmail = null!;
+    private Label lblEmail = null!;
     private System.ComponentModel.IContainer? components;
     private TableLayoutPanel tlpRoot = null!;
     private TableLayoutPanel tlpFields = null!;
@@ -37,9 +39,9 @@ partial class UserAccountEditDialog
         lbltxtUsername = new Label();
         txtFullName = new TextBox();
         lbltxtFullName = new Label();
-        cboRole = new ComboBox();
+        cboRole = new QuanLyKyTucXa.WinForms.Helpers.CleanComboBox();
         lblcboRole = new Label();
-        cboStudent = new ComboBox();
+        cboStudent = new QuanLyKyTucXa.WinForms.Helpers.CleanComboBox();
         lblcboStudent = new Label();
         txtNewPassword = new TextBox();
         lbltxtNewPassword = new Label();
@@ -176,6 +178,10 @@ partial class UserAccountEditDialog
         btnSave.ForeColor = Color.White;
         btnSave.FlatStyle = FlatStyle.Flat;
         btnSave.UseVisualStyleBackColor = false;
+        txtEmail = new TextBox {Name="txtEmail",MaxLength=100,PlaceholderText="Email thật để nhận OTP",Dock=DockStyle.Top};
+        lblEmail = new Label {Text="Email nhận OTP",AutoSize=true};
+        tlpFields.RowCount=7;tlpFields.RowStyles.Add(new RowStyle(SizeType.Absolute,52F));
+        tlpFields.Controls.Add(lblEmail,0,6);tlpFields.Controls.Add(txtEmail,1,6);
         AcceptButton = btnSave;
         CancelButton = btnCancel;
         AutoScaleDimensions = new SizeF(96F, 96F);

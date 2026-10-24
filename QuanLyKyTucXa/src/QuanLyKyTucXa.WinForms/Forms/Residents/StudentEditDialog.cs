@@ -18,7 +18,7 @@ public partial class StudentEditDialog : Form
     public StudentEditDialog()
     {
         InitializeComponent();
-        QuanLyKyTucXa.WinForms.Helpers.DialogLayout.ConfigureCompactEditor(this, tlpRoot, pnlScroll, tlpFields, flpActions, lblError, 11);
+        QuanLyKyTucXa.WinForms.Helpers.ModernDialog.Install(this, tlpFields, btnLuu, btnHuy, lblError);
         components ??= new System.ComponentModel.Container();
         errorProvider1 ??= new ErrorProvider(components);
         errorProvider1.ContainerControl = this;
@@ -26,6 +26,12 @@ public partial class StudentEditDialog : Form
     }
 
     public StudentEditDialog(SinhVien value, bool isNew, SinhVienService service) : this()
+    {
+        BindValue(value, isNew, service);
+        Shown += async (_, _) => await LoadAcademicCatalogAsync();
+    }
+
+    private void BindValue(SinhVien value, bool isNew, SinhVienService service)
     {
         _value = value;
         _isNew = isNew;
@@ -56,8 +62,9 @@ public partial class StudentEditDialog : Form
             var match = _catalog.Classes.FirstOrDefault(x => x.Code == txtLop.Text);
             if (match is not null && txtKhoa.Text != match.Faculty) txtKhoa.Text = match.Faculty;
         };
-        Shown += async (_, _) => await LoadAcademicCatalogAsync();
+
     }
+
 
     private async Task LoadAcademicCatalogAsync()
     {

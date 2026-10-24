@@ -11,7 +11,7 @@
 | 03_StoredProcedures_Views.sql | Tạo view và stored procedure sau 02 |
 | 04_InsertSampleData.sql | Tùy chọn nạp lại dữ liệu mẫu, đã có đủ giường; xóa dữ liệu cũ |
 | 05_UpdateSchema_Catalog.sql | Bổ sung khôi phục tài khoản, khóa đăng nhập và danh mục khoa/ngành/lớp; chạy lại được, không reset mật khẩu |
-| 06_ResetDemoAccounts.sql | Tùy chọn đặt lại Admin và bốn tài khoản demo; chỉ chạy khi muốn reset mật khẩu/mã khôi phục |
+| 06_ResetDemoAccounts.sql | Tùy chọn đặt lại Admin và bốn tài khoản demo; chỉ chạy khi muốn reset mật khẩu và thu hồi OTP cũ |
 
 Các file cập nhật rời trước đây đã được gộp. Mẫu cấp login SQL cho máy chủ chung chưa dùng đã bỏ. Việc dọn file không xóa database hoặc dữ liệu đang lưu trên máy.
 
@@ -47,3 +47,6 @@ Script 04 và LatestData dùng các mật khẩu trên. Database cũ chỉ đổ
 Admin chọn **Hệ thống → Lưu dữ liệu bàn giao**, lưu đè `database/snapshots/LatestData.sql`, xem lại rồi commit/push cùng code. Người nhận pull và nhập bản này vào database demo. Chỉ pull Git không tự đồng bộ dữ liệu SQL.
 
 Chi tiết: **[Hướng dẫn bàn giao](../docs/BanGiaoDuLieu.md)** và **[Phân quyền](../docs/PhanQuyen_KhoaDangNhap.md)**.
+
+## OTP email mới
+Máy đang có dữ liệu chạy lại 05_UpdateSchema_Catalog.sql để bổ sung bảng OTP. Xem [hướng dẫn Gmail và OTP](../docs/EmailOtp_Gmail.md). Không chạy lại 01/04 hoặc LatestData chỉ để thêm OTP.

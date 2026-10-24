@@ -12,7 +12,7 @@ public sealed partial class ApprovalDialog : Form
     public ApprovalDialog()
     {
         InitializeComponent();
-        QuanLyKyTucXa.WinForms.Helpers.DialogLayout.ConfigureFixed(this, btnApprove, btnCancel);
+        QuanLyKyTucXa.WinForms.Helpers.ModernDialog.Install(this, tlpFields, btnApprove, btnCancel, null, lblStudent);
         _start.Value = DateTime.Today;
         _end.Value = DateTime.Today.AddMonths(6);
         _beds.FormattingEnabled = true;

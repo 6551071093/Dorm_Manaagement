@@ -2,6 +2,8 @@
 namespace QuanLyKyTucXa.WinForms.Forms.Auth;
 partial class RegisterDialog
 {
+    private TextBox txtEmail = null!;
+    private Label labelEmail = null!;
     private System.ComponentModel.IContainer? components;
     private Panel root = null!, fields = null!, heading = null!, footer = null!, actions = null!;
     private Label lblTitle = null!, lblSubtitle = null!, lblNotice = null!, lblMessage = null!, lblFooter = null!;
@@ -16,6 +18,8 @@ private TextBox txtConfirm = null!; private Label label3 = null!; private LoginI
     private void InitializeComponent()
     {
         components = new System.ComponentModel.Container();
+        txtEmail = new TextBox { Name="txtEmail", MaxLength=100, PlaceholderText="Email đang sử dụng để nhận OTP" };
+        labelEmail = new Label { Text="Email *" };
         root = new Panel(); fields = new Panel(); heading = new Panel(); footer = new Panel(); actions = new Panel();
         lblTitle = new Label(); lblSubtitle = new Label(); lblNotice = new Label(); lblMessage = new Label(); lblFooter = new Label();
         btnSubmit = new LoginActionButton(); btnCancel = new LoginActionButton(); chkShowPassword = new CheckBox(); homeGlyph = new LoginGlyph();

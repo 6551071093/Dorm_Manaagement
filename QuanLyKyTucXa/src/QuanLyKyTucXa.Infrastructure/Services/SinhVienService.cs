@@ -67,7 +67,7 @@ public sealed class SinhVienService(Func<AppDbContext> createDb, AuthSession? se
     public static void ValidateAndNormalize(SinhVien value)
     {
         value.MaSv = Required(value.MaSv, "Mã sinh viên", 20);
-        value.HoTen = Required(value.HoTen, "Họ tên", 100);
+        value.HoTen = AccountValidation.FullName(value.HoTen);
         value.Lop = Required(value.Lop, "Lớp", 50);
         value.Khoa = Required(value.Khoa, "Khoa", 100);
         value.Cccd = (value.Cccd ?? "").Trim();
@@ -76,9 +76,7 @@ public sealed class SinhVienService(Func<AppDbContext> createDb, AuthSession? se
         if (!Regex.IsMatch(value.SoDienThoai, @"^0[0-9]{9}$")) throw new InvalidOperationException("Số điện thoại phải có 10 chữ số, bắt đầu bằng 0.");
         if (value.NgaySinh < new DateOnly(1900, 1, 1)) throw new InvalidOperationException("Ngày sinh phải từ năm 1900.");
         if (value.NgaySinh >= DateOnly.FromDateTime(DateTime.Today)) throw new InvalidOperationException("Ngày sinh phải trước ngày hiện tại.");
-        value.Email = string.IsNullOrWhiteSpace(value.Email) ? null : value.Email.Trim();
-        if (value.Email is not null && (value.Email.Length > 100 || !MailAddress.TryCreate(value.Email, out var mail) || mail.Address != value.Email))
-            throw new InvalidOperationException("Email không hợp lệ hoặc dài quá 100 ký tự.");
+        value.Email = AccountValidation.Email(value.Email);
         if (value.GioiTinh is not ("Nam" or "Nữ")) throw new InvalidOperationException("Vui lòng chọn giới tính.");
         if (value.QueQuan?.Length > 200) throw new InvalidOperationException("Quê quán tối đa 200 ký tự.");
     }

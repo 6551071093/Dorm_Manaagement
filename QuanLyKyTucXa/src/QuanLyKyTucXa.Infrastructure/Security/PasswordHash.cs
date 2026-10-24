@@ -1,4 +1,4 @@
-﻿using System.Security.Cryptography;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace QuanLyKyTucXa.Infrastructure.Security;
@@ -38,5 +38,8 @@ public static class PasswordHash
     {
         if (string.IsNullOrWhiteSpace(password) || password.Length < 8 || password.Length > 128)
             throw new InvalidOperationException("Mật khẩu mới phải có từ 8 đến 128 ký tự.");
+        if(password.Any(char.IsWhiteSpace) || password.Any(char.IsControl) || !password.Any(char.IsUpper)
+            || !password.Any(char.IsLower) || !password.Any(char.IsDigit) || !password.Any(c=>!char.IsLetterOrDigit(c)))
+            throw new InvalidOperationException("Mật khẩu phải có chữ hoa, chữ thường, số, ký tự đặc biệt và không chứa khoảng trắng.");
     }
 }
