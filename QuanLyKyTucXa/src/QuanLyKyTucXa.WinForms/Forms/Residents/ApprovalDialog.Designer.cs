@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 namespace QuanLyKyTucXa.WinForms.Forms.Residents;
 
 partial class ApprovalDialog
@@ -21,7 +21,7 @@ partial class ApprovalDialog
 
     private void InitializeComponent()
     {
-        lblStudent = new Label(); tlpFields = new TableLayoutPanel(); lblBed = new Label(); _beds = new ComboBox(); lblStart = new Label(); _start = new DateTimePicker(); lblEnd = new Label(); _end = new DateTimePicker(); lblDeposit = new Label(); _deposit = new NumericUpDown(); btnApprove = new Button(); btnCancel = new Button();
+        lblStudent = new Label(); tlpFields = new TableLayoutPanel(); lblBed = new Label(); _beds = new QuanLyKyTucXa.WinForms.Helpers.CleanComboBox(); lblStart = new Label(); _start = new QuanLyKyTucXa.WinForms.Helpers.CleanDateTimePicker(); lblEnd = new Label(); _end = new QuanLyKyTucXa.WinForms.Helpers.CleanDateTimePicker(); lblDeposit = new Label(); _deposit = new NumericUpDown(); btnApprove = new Button(); btnCancel = new Button();
         tlpFields.SuspendLayout(); ((System.ComponentModel.ISupportInitialize)_deposit).BeginInit(); SuspendLayout();
         lblStudent.AutoSize = true; lblStudent.Font = new Font("Segoe UI", 15F, FontStyle.Bold); lblStudent.ForeColor = Color.FromArgb(14, 34, 64); lblStudent.Location = new Point(22, 18);
         tlpFields.Location = new Point(22, 65); tlpFields.Size = new Size(456, 190); tlpFields.ColumnCount = 2; tlpFields.RowCount = 4; tlpFields.BackColor = Color.White; tlpFields.Padding = new Padding(12); tlpFields.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35F)); tlpFields.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 65F));  tlpFields.RowStyles.Add(new RowStyle(SizeType.Percent, 25F)); tlpFields.RowStyles.Add(new RowStyle(SizeType.Percent, 25F)); tlpFields.RowStyles.Add(new RowStyle(SizeType.Percent, 25F)); tlpFields.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));

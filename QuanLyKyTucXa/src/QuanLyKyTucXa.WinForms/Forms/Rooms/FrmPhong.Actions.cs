@@ -7,7 +7,7 @@ namespace QuanLyKyTucXa.WinForms.Forms.Rooms;
 public partial class FrmPhong
 {
     private bool _roomActionBusy;
-    private PhongGiuongService RoomService => new(() => AppDbContextFactory.Create(_connectionString));
+    private PhongGiuongService RoomService => new(() => AppDbContextFactory.Create(_connectionString), _session);
     private string? SelectedRoomId()
     {
         if (dgvPhong.SelectedRows.Count > 0)
@@ -35,11 +35,10 @@ public partial class FrmPhong
     }
     private async Task EditRoomAsync(string? id)
     {
+        if (!QuanLyKyTucXa.Infrastructure.Security.AuthPolicy.Can(_session, QuanLyKyTucXa.Infrastructure.Security.AppPermission.ConfigureRooms))
+            throw new UnauthorizedAccessException("Chỉ Admin được thêm hoặc sửa cấu hình phòng.");
         var service = RoomService;
-        var towers = await service.GetTowersAsync();
-        if (towers.Count == 0) throw new InvalidOperationException("Chưa có tòa nhà. Cần khai báo tòa nhà trước khi thêm phòng.");
-        var value = id is null ? new Phong() : await service.GetAsync(id);
-        using var dialog = new RoomEditDialog(value, id is null, towers, service);
+        using var dialog = new RoomEditDialog(service, id);
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
         await RefreshViewAsync();
         foreach (DataGridViewRow row in dgvPhong.Rows)
@@ -58,7 +57,7 @@ public partial class FrmPhong
         _roomActionBusy = true;
         btnThem.Enabled = btnSua.Enabled = btnXoa.Enabled = false;
         try { await action(); }
-        catch (InvalidOperationException ex) { MessageBox.Show(this, ex.Message, "Phòng", MessageBoxButtons.OK, MessageBoxIcon.Warning); }
+        catch (Exception ex) when (ex is InvalidOperationException or UnauthorizedAccessException) { MessageBox.Show(this, ex.Message, "Phòng", MessageBoxButtons.OK, MessageBoxIcon.Warning); }
         catch (Exception) { MessageBox.Show(this, "Không thể thực hiện thao tác. Kiểm tra kết nối hoặc làm mới dữ liệu rồi thử lại.", "Phòng", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         finally
         {

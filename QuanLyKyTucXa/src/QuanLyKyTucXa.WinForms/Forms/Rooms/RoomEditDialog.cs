@@ -16,10 +16,17 @@ public partial class RoomEditDialog : Form
     public RoomEditDialog()
     {
         InitializeComponent();
+        QuanLyKyTucXa.WinForms.Helpers.ModernDialog.Install(this, tlpFields, btnLuu, btnHuy, lblError, lblHint);
+        components ??= new System.ComponentModel.Container();
     }
 
     public RoomEditDialog(Phong value, bool isNew, List<ToaNha> towers, PhongGiuongService service)
         : this()
+    {
+        BindValue(value, isNew, towers, service);
+    }
+
+    private void BindValue(Phong value, bool isNew, List<ToaNha> towers, PhongGiuongService service)
     {
         _value = value;
         _service = service;
@@ -38,6 +45,7 @@ public partial class RoomEditDialog : Form
         chkSuaChua.Checked = value.TrangThai == "Đang sửa chữa";
         txtGhiChu.Text = value.GhiChu ?? "";
     }
+
 
     private async void Save_Click(object? sender, EventArgs e)
     {

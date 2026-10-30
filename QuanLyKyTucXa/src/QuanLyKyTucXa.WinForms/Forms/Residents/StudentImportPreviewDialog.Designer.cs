@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 namespace QuanLyKyTucXa.WinForms.Forms.Residents;
 
 partial class StudentImportPreviewDialog
@@ -40,7 +40,7 @@ partial class StudentImportPreviewDialog
         tlpRoot.RowStyles.Add(new RowStyle(SizeType.Absolute, 64F));
         tlpRoot.RowStyles.Add(new RowStyle(SizeType.Percent, 70F));
         tlpRoot.RowStyles.Add(new RowStyle(SizeType.Percent, 30F));
-        tlpRoot.RowStyles.Add(new RowStyle(SizeType.Absolute, 48F));
+        tlpRoot.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         tlpRoot.Controls.Add(lblSummary, 0, 0);
         tlpRoot.Controls.Add(gridPreview, 0, 1);
         tlpRoot.Controls.Add(txtErrors, 0, 2);
@@ -61,7 +61,7 @@ partial class StudentImportPreviewDialog
         txtErrors.Multiline = true;
         txtErrors.ReadOnly = true;
         txtErrors.ScrollBars = ScrollBars.Vertical;
-        flpActions.Dock = DockStyle.Fill;
+        flpActions.AutoSize = true; flpActions.AutoSizeMode = AutoSizeMode.GrowAndShrink; flpActions.Dock = DockStyle.Fill;
         flpActions.FlowDirection = FlowDirection.RightToLeft;
         flpActions.WrapContents = false;
         flpActions.Padding = new Padding(0, 6, 0, 0);

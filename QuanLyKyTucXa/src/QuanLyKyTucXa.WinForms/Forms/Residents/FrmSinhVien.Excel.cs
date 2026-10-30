@@ -1,4 +1,5 @@
-﻿using QuanLyKyTucXa.Infrastructure.ImportExport;
+using QuanLyKyTucXa.Infrastructure.ImportExport;
+using QuanLyKyTucXa.Infrastructure.Security;
 
 namespace QuanLyKyTucXa.WinForms.Forms.Residents;
 
@@ -29,6 +30,11 @@ public partial class FrmSinhVien
 
     private async void ImportStudents_Click(object? sender, EventArgs e)
     {
+        if (!AuthPolicy.Can(_session, AppPermission.ImportResidents))
+        {
+            MessageBox.Show(this, "Chỉ Admin được nhập dữ liệu hàng loạt.", "Phân quyền", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
         if (_excelBusy || _studentActionBusy || _loadingData) return;
         using var dialog = new OpenFileDialog { Title = "Nhập hồ sơ sinh viên", Filter = "Excel Workbook (*.xlsx)|*.xlsx" };
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
@@ -53,6 +59,11 @@ public partial class FrmSinhVien
 
     private async void DownloadTemplate_Click(object? sender, EventArgs e)
     {
+        if (!AuthPolicy.Can(_session, AppPermission.ImportResidents))
+        {
+            MessageBox.Show(this, "Chỉ Admin được nhập dữ liệu hàng loạt.", "Phân quyền", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
         if (_excelBusy || _studentActionBusy || _loadingData) return;
         using var dialog = new SaveFileDialog {
             Title = "Lưu mẫu nhập hồ sơ sinh viên", Filter = "Excel Workbook (*.xlsx)|*.xlsx",

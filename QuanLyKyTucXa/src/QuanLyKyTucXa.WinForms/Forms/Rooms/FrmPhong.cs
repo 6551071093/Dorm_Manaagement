@@ -1,3 +1,4 @@
+using QuanLyKyTucXa.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
 using QuanLyKyTucXa.Infrastructure.Data.Context;
 using System;
@@ -8,16 +9,23 @@ namespace QuanLyKyTucXa.WinForms.Forms.Rooms;
 
 public partial class FrmPhong : Form
 {
+    private readonly AuthSession? _session;
     public event EventHandler? ReturnHomeRequested;
     public event EventHandler? RecordCountChanged;
     public int VisibleRoomCount => dgvPhong.Rows.Cast<DataGridViewRow>().Count(row => row.Visible);
 
     public FrmPhong() : this(string.Empty) { }
 
-    public FrmPhong(string connectionString)
+    public FrmPhong(string connectionString, AuthSession? session = null)
     {
         _connectionString = connectionString;
+        _session = session;
         InitializeComponent();
+        if (_session is not null)
+        {
+            btnXoa.Visible = AuthPolicy.Can(_session, AppPermission.DeleteRooms);
+            btnThem.Visible = btnSua.Visible = AuthPolicy.Can(_session, AppPermission.ConfigureRooms);
+        }
         cboToa.SelectedIndex = 0;
         cboTrangThai.SelectedIndex = 0;
         Load += async (_, _) => await RefreshViewAsync();
@@ -143,6 +151,7 @@ public partial class FrmPhong : Form
             if (string.IsNullOrWhiteSpace(_connectionString))
                 throw new InvalidOperationException("Chưa có chuỗi kết nối database.");
             await using var db = AppDbContextFactory.Create(_connectionString);
+            await AuthPolicy.RequireAsync(db, _session, AppPermission.ManageRooms);
             var rooms = await db.Phongs.AsNoTracking()
                 .OrderBy(p => p.MaToa).ThenBy(p => p.Tang).ThenBy(p => p.MaPhong)
                 .Select(p => new RoomListRow(p.MaPhong, p.MaToa, p.Tang,

@@ -1,4 +1,4 @@
-﻿using QuanLyKyTucXa.Infrastructure;
+using QuanLyKyTucXa.Infrastructure;
 using QuanLyKyTucXa.Infrastructure.Data.Context;
 using QuanLyKyTucXa.Infrastructure.Services;
 
@@ -37,8 +37,7 @@ public partial class FrmSinhVien
     private async Task EditStudentAsync(string? id)
     {
         var service = StudentService;
-        var value = id is null ? new SinhVien() : await service.GetAsync(id);
-        using var dialog = new StudentEditDialog(value, id is null, service);
+        using var dialog = id is null ? new StudentEditDialog(new SinhVien(), true, service) : new StudentEditDialog(service, id);
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
         await RefreshViewAsync();
         foreach (DataGridViewRow row in dgvSinhVien.Rows)

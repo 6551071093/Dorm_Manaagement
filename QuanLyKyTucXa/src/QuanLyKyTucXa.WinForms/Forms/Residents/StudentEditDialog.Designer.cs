@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 namespace QuanLyKyTucXa.WinForms.Forms.Residents;
 
 partial class StudentEditDialog
@@ -25,9 +25,9 @@ partial class StudentEditDialog
     private Label lblSoDienThoai = null!;
     private TextBox txtEmail = null!;
     private Label lblEmail = null!;
-    private TextBox txtLop = null!;
+    private ComboBox txtLop = null!;
     private Label lblLop = null!;
-    private TextBox txtKhoa = null!;
+    private ComboBox txtKhoa = null!;
     private Label lblKhoa = null!;
     private TextBox txtQueQuan = null!;
     private Label lblQueQuan = null!;
@@ -50,9 +50,9 @@ partial class StudentEditDialog
         lblHoTen = new Label();
         txtHoTen = new TextBox();
         lblNgaySinh = new Label();
-        dtpNgaySinh = new DateTimePicker();
+        dtpNgaySinh = new QuanLyKyTucXa.WinForms.Helpers.CleanDateTimePicker();
         lblGioiTinh = new Label();
-        cboGioiTinh = new ComboBox();
+        cboGioiTinh = new QuanLyKyTucXa.WinForms.Helpers.CleanComboBox();
         lblCccd = new Label();
         txtCccd = new TextBox();
         lblSoDienThoai = new Label();
@@ -60,9 +60,9 @@ partial class StudentEditDialog
         lblEmail = new Label();
         txtEmail = new TextBox();
         lblLop = new Label();
-        txtLop = new TextBox();
+        txtLop = new QuanLyKyTucXa.WinForms.Helpers.CleanComboBox();
         lblKhoa = new Label();
-        txtKhoa = new TextBox();
+        txtKhoa = new QuanLyKyTucXa.WinForms.Helpers.CleanComboBox();
         lblQueQuan = new Label();
         txtQueQuan = new TextBox();
         lblTrangThai = new Label();
@@ -92,8 +92,8 @@ partial class StudentEditDialog
         tlpRoot.Padding = new Padding(18);
         tlpRoot.RowCount = 3;
         tlpRoot.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-        tlpRoot.RowStyles.Add(new RowStyle(SizeType.Absolute, 64F));
-        tlpRoot.RowStyles.Add(new RowStyle(SizeType.Absolute, 44F));
+        tlpRoot.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        tlpRoot.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         tlpRoot.Size = new Size(560, 640);
         tlpRoot.TabIndex = 0;
         // 
@@ -406,7 +406,7 @@ partial class StudentEditDialog
         // 
         flpActions.Controls.Add(btnHuy);
         flpActions.Controls.Add(btnLuu);
-        flpActions.Dock = DockStyle.Fill;
+        flpActions.AutoSize = true; flpActions.AutoSizeMode = AutoSizeMode.GrowAndShrink; flpActions.Dock = DockStyle.Fill;
         flpActions.FlowDirection = FlowDirection.RightToLeft;
         flpActions.Location = new Point(21, 581);
         flpActions.Name = "flpActions";
@@ -448,9 +448,9 @@ partial class StudentEditDialog
         AutoScaleMode = AutoScaleMode.Dpi;
         BackColor = Color.FromArgb(246, 246, 250);
         CancelButton = btnHuy;
-        ClientSize = new Size(560, 640);
+        ClientSize = new Size(620, 540);
         Controls.Add(tlpRoot);
-        Font = new Font("Segoe UI", 10F);
+        Font = new Font("Segoe UI", 11F);
         MaximizeBox = false;
         MinimizeBox = false;
         MinimumSize = new Size(460, 380);

@@ -46,7 +46,7 @@ partial class RoomEditDialog
         lblTenPhong = new Label();
         txtTenPhong = new TextBox();
         lblToa = new Label();
-        cboToa = new ComboBox();
+        cboToa = new QuanLyKyTucXa.WinForms.Helpers.CleanComboBox();
         lblTang = new Label();
         nudTang = new NumericUpDown();
         lblLoaiPhong = new Label();
@@ -86,8 +86,8 @@ partial class RoomEditDialog
         tlpRoot.Padding = new Padding(18);
         tlpRoot.RowCount = 3;
         tlpRoot.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-        tlpRoot.RowStyles.Add(new RowStyle(SizeType.Absolute, 64F));
-        tlpRoot.RowStyles.Add(new RowStyle(SizeType.Absolute, 44F));
+        tlpRoot.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        tlpRoot.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         tlpRoot.Size = new Size(560, 610);
         tlpRoot.TabIndex = 0;
         // 
@@ -367,7 +367,7 @@ partial class RoomEditDialog
         // 
         flpActions.Controls.Add(btnHuy);
         flpActions.Controls.Add(btnLuu);
-        flpActions.Dock = DockStyle.Fill;
+        flpActions.AutoSize = true; flpActions.AutoSizeMode = AutoSizeMode.GrowAndShrink; flpActions.Dock = DockStyle.Fill;
         flpActions.FlowDirection = FlowDirection.RightToLeft;
         flpActions.Location = new Point(21, 551);
         flpActions.Name = "flpActions";
@@ -404,9 +404,9 @@ partial class RoomEditDialog
         AutoScaleMode = AutoScaleMode.Dpi;
         BackColor = Color.FromArgb(246, 246, 250);
         CancelButton = btnHuy;
-        ClientSize = new Size(560, 610);
+        ClientSize = new Size(620, 510);
         Controls.Add(tlpRoot);
-        Font = new Font("Segoe UI", 10F);
+        Font = new Font("Segoe UI", 11F);
         MaximizeBox = false;
         MinimizeBox = false;
         MinimumSize = new Size(460, 380);
