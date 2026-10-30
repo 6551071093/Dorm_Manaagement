@@ -45,6 +45,8 @@ public sealed class PhongGiuongService(Func<AppDbContext> createDb, AuthSession?
         var entity = await db.Phongs.Include(x => x.Giuongs).SingleOrDefaultAsync(x => x.MaPhong == value.MaPhong);
         if (isNew && entity is not null) throw new InvalidOperationException("Mã phòng đã tồn tại.");
         if (!isNew && entity is null) throw new InvalidOperationException("Phòng không còn tồn tại.");
+        if (tower.TrangThai != "Hoạt động" && (isNew || entity!.MaToa != value.MaToa))
+            throw new InvalidOperationException("Không thể thêm phòng hoặc chuyển phòng vào tòa nhà đang bảo trì hoặc đã dừng hoạt động.");
         if (isNew)
         {
             entity = new Phong { MaPhong = value.MaPhong, MaToa = value.MaToa };

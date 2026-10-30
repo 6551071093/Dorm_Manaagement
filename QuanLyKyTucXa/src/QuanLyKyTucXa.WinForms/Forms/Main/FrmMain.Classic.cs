@@ -39,10 +39,10 @@ public partial class FrmMain
     private void Incidents_Click(object? sender, EventArgs e) => ShowComingSoon("Sự cố");
     private void Utilities_Click(object? sender, EventArgs e) => ShowComingSoon("Điện nước");
     private void Reports_Click(object? sender, EventArgs e) => ShowComingSoon("Thống kê");
-    private void Towers_Click(object? sender, EventArgs e) => ShowComingSoon("Tòa nhà");
-    private void Beds_Click(object? sender, EventArgs e) => ShowComingSoon("Giường");
+    private void Towers_Click(object? sender, EventArgs e) => ShowTowers();
+    private void Beds_Click(object? sender, EventArgs e) => ShowBeds();
     private void Prices_Click(object? sender, EventArgs e) => ShowComingSoon("Bảng giá và dịch vụ");
-    private void Contracts_Click(object? sender, EventArgs e) => ShowComingSoon("Hợp đồng");
+    private void Contracts_Click(object? sender, EventArgs e) => ShowContracts();
     private void Exit_Click(object? sender, EventArgs e) => Close();
     private void CloseTab_Click(object? sender, EventArgs e) => CloseCurrentTab();
     private void About_Click(object? sender, EventArgs e) => MessageBox.Show(this,
@@ -72,6 +72,9 @@ public partial class FrmMain
         if (_activeChild is FrmDangKyKtx registration) { await registration.RefreshViewAsync(); return; }
         if (_activeChild is FrmTraCuuDangKy lookup) { await lookup.RefreshViewAsync(); return; }
         if (_activeChild is FrmDuyetDon approvals) { await approvals.RefreshViewAsync(); return; }
+        if (_activeChild is FrmToaNha towers) { await towers.RefreshViewAsync(); return; }
+        if (_activeChild is FrmGiuong beds) { await beds.RefreshViewAsync(); return; }
+        if (_activeChild is FrmHopDong contracts) { await contracts.RefreshViewAsync(); return; }
         var refresh = FindControls<Button>(_activeChild).FirstOrDefault(b => b.Name == "btnLamMoi");
         if (refresh is not null) refresh.PerformClick();
         else SetStatus("Sẵn sàng");

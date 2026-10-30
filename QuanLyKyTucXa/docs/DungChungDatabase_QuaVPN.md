@@ -27,7 +27,7 @@ Không mở cổng SQL trên router ra Internet; không dùng Remote Address=Any
 Hướng dẫn Microsoft: https://learn.microsoft.com/en-us/sql/database-engine/configure-windows/configure-a-windows-firewall-for-database-engine-access?view=sql-server-ver17
 
 ## 4. Chuẩn bị database và tài khoản SQL
-Trên database máy chủ đang có dữ liệu: chạy script 05_UpdateSchema_Catalog.sql nếu chưa có; không chạy lại 01/04 vì đó là các script dựng/nạp lại dữ liệu.
+Trên database máy chủ đang có dữ liệu: chạy script 05_UpdateSchema_Catalog.sql nếu chưa có và 07_UpdateSchema_RoomAssetsHandover.sql để bật danh mục tài sản/biên bản bàn giao; không chạy lại 01/04 vì đó là các script dựng/nạp lại dữ liệu.
 Dữ liệu đang có nằm trên máy chủ và không phải sao chép cho từng máy thành viên.
 Nếu dùng SQL Authentication cho các máy ngoài Windows domain:
 - Trong SSMS > Server Properties > Security, người quản lý cấu hình SQL Server and Windows Authentication mode rồi khởi động lại SQL Server nếu cần.

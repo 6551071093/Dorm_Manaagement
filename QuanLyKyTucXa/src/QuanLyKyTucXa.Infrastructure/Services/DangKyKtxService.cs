@@ -150,14 +150,17 @@ public sealed class DangKyKtxService(Func<AppDbContext> createDb, AuthSession? s
         app.TrangThai = "Đã duyệt";
         app.NguoiDuyet = reviewerId;
         app.NgayDuyet = DateTime.Now;
-        db.HopDongs.Add(new HopDong {
+        var contract = new HopDong {
             MaHopDong = $"HD-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString("N")[..16].ToUpperInvariant()}",
             MaSv = app.MaSv, MaGiuong = bed.MaGiuong, NgayBatDau = start, NgayKetThuc = end,
             TienCoc = deposit, TienPhongThang = bed.MaPhongNavigation.GiaPhong,
             TrangThai = "Hiệu lực", NgayTao = DateTime.Now, GhiChu = $"Tạo từ đơn đăng ký #{maDangKy}"
-        });
+        };
+        db.HopDongs.Add(contract);
         // The database trigger synchronizes student, bed and room occupancy in this transaction.
         await db.SaveChangesAsync();
+        await RoomAssetHandoverStore.CreateEntryMinuteAsync(db, contract.MaHopDong, bed.MaPhong, bed.MaGiuong,
+            session!.FullName, "Biên bản nhận phòng được tạo từ danh mục tài sản tại thời điểm ký hợp đồng.");
         await tx.CommitAsync();
     }
 

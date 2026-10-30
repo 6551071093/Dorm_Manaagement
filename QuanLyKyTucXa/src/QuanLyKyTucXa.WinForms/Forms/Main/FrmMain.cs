@@ -499,6 +499,36 @@ public partial class FrmMain : Form
         if (_activeChild is FrmPhong activeRooms) SetStatus($"Sẵn sàng - {activeRooms.VisibleRoomCount} phòng");
     }
 
+    private void ShowTowers()
+    {
+        if (!RequireUi(AppPermission.ManageRooms)) return;
+        var form = new FrmToaNha(_connectionString, _session);
+        form.ReturnHomeRequested += (_, _) => CloseCurrentTab();
+        ShowChild(form, "Tòa nhà", "Quản lý tòa nhà ký túc xá");
+        SelectNav(btnNavRooms);
+        SetStatus("Sẵn sàng - Tòa nhà");
+    }
+
+    private void ShowBeds()
+    {
+        if (!RequireUi(AppPermission.ManageRooms)) return;
+        var form = new FrmGiuong(_connectionString, _session);
+        form.ReturnHomeRequested += (_, _) => CloseCurrentTab();
+        ShowChild(form, "Giường", "Theo dõi trạng thái giường");
+        SelectNav(btnNavRooms);
+        SetStatus("Sẵn sàng - Giường");
+    }
+
+    private void ShowContracts()
+    {
+        if (!RequireUi(AppPermission.ManageRooms)) return;
+        var form = new FrmHopDong(_connectionString, _session);
+        form.ReturnHomeRequested += (_, _) => CloseCurrentTab();
+        ShowChild(form, "Hợp đồng", "Chuyển phòng và trả phòng");
+        SelectNav(btnNavRooms);
+        SetStatus("Sẵn sàng - Hợp đồng");
+    }
+
     private void ShowRegistration()
     {
         if (!RequireUi(AppPermission.Register)) return;
