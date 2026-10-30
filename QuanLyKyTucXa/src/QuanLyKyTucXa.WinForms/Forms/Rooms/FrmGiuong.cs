@@ -31,6 +31,7 @@ public sealed class FrmGiuong : Form
     private readonly Button _save = new() { Text = "Cập nhật trạng thái", AutoSize = true };
     private readonly Button _add = new() { Text = "Thêm giường", AutoSize = true };
     private readonly Button _delete = new() { Text = "Xóa giường", AutoSize = true };
+    private readonly Button _assets = new() { Text = "Tài sản phòng", AutoSize = true };
     private readonly ToolTip _bedToolTip = new();
 
     public event EventHandler? ReturnHomeRequested;
@@ -70,11 +71,13 @@ public sealed class FrmGiuong : Form
         _add.Visible = AuthPolicy.Can(_session, AppPermission.ConfigureRooms);
         _delete.Click += async (_, _) => await DeleteAsync();
         _delete.Visible = AuthPolicy.Can(_session, AppPermission.DeleteRooms);
+        _assets.Click += async (_, _) => await ManageAssetsAsync();
+        _assets.Visible = AuthPolicy.Can(_session, AppPermission.ManageRooms);
         _grid.SelectionChanged += (_, _) => UpdateEditor();
         _grid.DataBindingComplete += (_, _) => SetGridHeaders();
         var refresh = Button("Làm mới", async () => await ReloadAsync());
         var close = Button("Đóng", () => ReturnHomeRequested?.Invoke(this, EventArgs.Empty));
-        toolbar.Controls.AddRange([_search, find, _status, _save, _add, _delete, refresh, close]);
+        toolbar.Controls.AddRange([_search, find, _status, _save, _add, _delete, _assets, refresh, close]);
 
         var legend = new Label
         {
@@ -245,5 +248,134 @@ public sealed class FrmGiuong : Form
         catch (Exception ex) { ShowError(ex); }
     }
 
+    private async Task ManageAssetsAsync()
+    {
+        if (_grid.CurrentRow?.DataBoundItem is not BedManagementRow bed) return;
+        using var dialog = new RoomAssetsDialog(_connectionString, _session, bed.RoomId);
+        dialog.ShowDialog(this);
+    }
+
     private void ShowError(Exception ex) => MessageBox.Show(this, ex.Message, "Giường", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+}
+
+internal sealed class RoomAssetsDialog : Form
+{
+    private readonly string _connectionString;
+    private readonly AuthSession? _session;
+    private readonly string _roomId;
+    private int? _selectedAssetId;
+    private readonly DataGridView _grid = new()
+    {
+        Dock = DockStyle.Fill,
+        ReadOnly = true,
+        AutoGenerateColumns = true,
+        AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
+        SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+        MultiSelect = false
+    };
+    private readonly TextBox _name = new() { Width = 210, PlaceholderText = "Tên tài sản" };
+    private readonly NumericUpDown _quantity = new() { Width = 90, Minimum = 1, Maximum = 10000, Value = 1, ThousandsSeparator = true };
+    private readonly ComboBox _condition = new() { Width = 120, DropDownStyle = ComboBoxStyle.DropDownList };
+    private readonly TextBox _note = new() { Width = 230, MaxLength = 255, PlaceholderText = "Ghi chú" };
+    private RoomAssetHandoverService Service => new(() => QuanLyKyTucXa.Infrastructure.Data.Context.AppDbContextFactory.Create(_connectionString), _session);
+
+    public RoomAssetsDialog(string connectionString, AuthSession? session, string roomId)
+    {
+        _connectionString = connectionString;
+        _session = session;
+        _roomId = roomId;
+        Text = $"Tài sản phòng {_roomId}";
+        Width = 950;
+        Height = 560;
+        StartPosition = FormStartPosition.CenterParent;
+        _condition.Items.AddRange(["Tốt", "Hư hỏng", "Bảo trì"]);
+        _condition.SelectedIndex = 0;
+        _grid.DataBindingComplete += (_, _) => SetHeaders();
+        _grid.SelectionChanged += (_, _) => SelectCurrent();
+
+        var fields = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 48, Padding = new Padding(8) };
+        fields.Controls.AddRange([new Label { Text = "Tên", AutoSize = true, Padding = new Padding(0, 7, 0, 0) }, _name,
+            new Label { Text = "Số lượng", AutoSize = true, Padding = new Padding(0, 7, 0, 0) }, _quantity, _condition, _note]);
+        var actions = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 46, Padding = new Padding(8) };
+        var add = Button("Thêm mới", ResetFields);
+        var save = Button("Lưu", async () => await SaveAsync());
+        var delete = Button("Xóa", async () => await DeleteAsync());
+        var refresh = Button("Làm mới", async () => await ReloadAsync());
+        var close = Button("Đóng", Close);
+        add.Visible = save.Visible = AuthPolicy.Can(_session, AppPermission.ConfigureRooms);
+        delete.Visible = AuthPolicy.Can(_session, AppPermission.DeleteRooms);
+        actions.Controls.AddRange([add, save, delete, refresh, close]);
+        Controls.Add(_grid);
+        Controls.Add(fields);
+        Controls.Add(actions);
+        Load += async (_, _) => await ReloadAsync();
+    }
+
+    private static Button Button(string text, Action action)
+    {
+        var button = new Button { Text = text, AutoSize = true };
+        button.Click += (_, _) => action();
+        return button;
+    }
+
+    private void SetHeaders()
+    {
+        Header("AssetId", "Mã"); Header("RoomId", "Phòng"); Header("Name", "Tên tài sản");
+        Header("Quantity", "Số lượng"); Header("Condition", "Tình trạng"); Header("Note", "Ghi chú");
+    }
+
+    private void Header(string key, string value)
+    {
+        if (_grid.Columns[key] is { } column) column.HeaderText = value;
+    }
+
+    private async Task ReloadAsync()
+    {
+        try { _grid.DataSource = await Service.GetRoomAssetsAsync(_roomId); }
+        catch (Exception ex) { ShowError(ex); }
+    }
+
+    private void SelectCurrent()
+    {
+        if (_grid.CurrentRow?.DataBoundItem is not RoomAssetRow row) return;
+        _selectedAssetId = row.AssetId;
+        _name.Text = row.Name;
+        _quantity.Value = row.Quantity;
+        _condition.SelectedItem = row.Condition;
+        _note.Text = row.Note ?? "";
+    }
+
+    private void ResetFields()
+    {
+        _selectedAssetId = null;
+        _grid.ClearSelection();
+        _name.Clear();
+        _quantity.Value = 1;
+        _condition.SelectedItem = "Tốt";
+        _note.Clear();
+        _name.Focus();
+    }
+
+    private async Task SaveAsync()
+    {
+        try
+        {
+            await Service.SaveRoomAssetAsync(new RoomAssetRow(_selectedAssetId ?? 0, _roomId, _name.Text,
+                (int)_quantity.Value, _condition.Text, _note.Text), _selectedAssetId is null);
+            await ReloadAsync();
+            ResetFields();
+        }
+        catch (Exception ex) { ShowError(ex); }
+    }
+
+    private async Task DeleteAsync()
+    {
+        if (_selectedAssetId is not int id) return;
+        if (MessageBox.Show(this, $"Xóa tài sản '{_name.Text}' khỏi phòng {_roomId}? Biên bản cũ vẫn được lưu.",
+                "Xác nhận xóa", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes) return;
+        try { await Service.DeleteRoomAssetAsync(id, _roomId); await ReloadAsync(); ResetFields(); }
+        catch (Exception ex) { ShowError(ex); }
+    }
+
+    private void ShowError(Exception ex) => MessageBox.Show(this, ex.Message, "Tài sản phòng", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 }

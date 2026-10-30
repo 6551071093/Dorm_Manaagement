@@ -184,8 +184,11 @@ public sealed class RoomOperationsService(Func<AppDbContext> createDb, AuthSessi
             .Select(x => new AvailableBedRow(x.MaGiuong, x.MaPhong, x.MaPhongNavigation.MaToaNavigation.TenToa, x.MaPhongNavigation.GiaPhong)).ToListAsync();
     }
 
-    public async Task TransferAsync(string contractId, string newBedId)
+    public async Task TransferAsync(string contractId, string newBedId, string? handoverNote, bool assetsInspected,
+        bool compensationCollected, string paymentMethod, IReadOnlyList<HandoverAssetLine> handoverItems)
     {
+        handoverNote = string.IsNullOrWhiteSpace(handoverNote) ? null : handoverNote.Trim();
+        var compensationAmount = ValidateHandover(assetsInspected, compensationCollected, paymentMethod, handoverNote, handoverItems);
         await using var db = createDb();
         await AuthPolicy.RequireAsync(db, session, AppPermission.Staff);
         await using var tx = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
@@ -205,11 +208,16 @@ public sealed class RoomOperationsService(Func<AppDbContext> createDb, AuthSessi
         var oldBedId = contract.MaGiuong;
         var oldRoomId = contract.MaGiuongNavigation.MaPhong;
         var oldPrice = contract.TienPhongThang;
+        await RoomAssetHandoverStore.SaveMinuteAsync(db, contractId, oldRoomId, oldBedId, "Chuyển phòng", session!.FullName, handoverNote, handoverItems);
+        if (compensationAmount > 0)
+            await AddCompensationAsync(db, contract, oldRoomId, compensationAmount, handoverNote, paymentMethod, "khi chuyển phòng");
         contract.MaGiuong = bed.MaGiuong;
         contract.TienPhongThang = bed.MaPhongNavigation.GiaPhong;
         contract.GhiChu = AppendHistory(contract.GhiChu,
             $"Chuyển {oldRoomId}/{oldBedId} → {bed.MaPhong}/{bed.MaGiuong} ngày {DateTime.Now:dd/MM/yyyy}; giá {oldPrice:N0} → {contract.TienPhongThang:N0} đ/tháng.");
         await db.SaveChangesAsync();
+        await RoomAssetHandoverStore.CreateEntryMinuteAsync(db, contractId, bed.MaPhong, bed.MaGiuong, session.FullName,
+            $"Nhận phòng sau khi chuyển từ {oldRoomId}/{oldBedId}.");
         await tx.CommitAsync();
     }
 
@@ -232,17 +240,11 @@ public sealed class RoomOperationsService(Func<AppDbContext> createDb, AuthSessi
         await tx.CommitAsync();
     }
 
-    public async Task CheckoutAsync(string contractId, string? handoverNote, bool assetsInspected, bool damageReported, bool compensationCollected, decimal compensationAmount, string paymentMethod)
+    public async Task CheckoutAsync(string contractId, string? handoverNote, bool assetsInspected,
+        bool compensationCollected, string paymentMethod, IReadOnlyList<HandoverAssetLine> handoverItems)
     {
         handoverNote = string.IsNullOrWhiteSpace(handoverNote) ? null : handoverNote.Trim();
-        if (handoverNote?.Length > 180) throw new InvalidOperationException("Ghi chú bàn giao tối đa 180 ký tự.");
-        if (!assetsInspected) throw new InvalidOperationException("Cần kiểm tra tài sản và thiết bị phòng trước khi trả phòng.");
-        if (compensationAmount < 0 || compensationAmount > 9999999999999999.99m) throw new InvalidOperationException("Tiền bồi thường không hợp lệ.");
-        if (damageReported && (compensationAmount <= 0 || handoverNote is null)) throw new InvalidOperationException("Hư hỏng/mất mát phải có mô tả và khoản bồi thường lớn hơn 0.");
-        if (damageReported && !compensationCollected) throw new InvalidOperationException("Cần xác nhận đã lập biên bản và thực thu khoản bồi thường.");
-        if (!damageReported && compensationAmount > 0) throw new InvalidOperationException("Chỉ ghi nhận khoản thu khi đã chọn có hư hỏng/mất mát.");
-        if (compensationAmount > 0 && paymentMethod is not ("Tiền mặt" or "Chuyển khoản VietQR" or "Chuyển khoản ngân hàng"))
-            throw new InvalidOperationException("Vui lòng chọn phương thức thu bồi thường hợp lệ.");
+        var compensationAmount = ValidateHandover(assetsInspected, compensationCollected, paymentMethod, handoverNote, handoverItems);
         await using var db = createDb();
         await AuthPolicy.RequireAsync(db, session, AppPermission.Staff);
         await using var tx = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);
@@ -251,49 +253,91 @@ public sealed class RoomOperationsService(Func<AppDbContext> createDb, AuthSessi
         if (contract.TrangThai != "Hiệu lực") throw new InvalidOperationException("Hợp đồng này đã được kết thúc.");
         if (await db.HoaDons.AnyAsync(h => h.MaHopDong == contractId && h.TrangThai != "Hủy" && h.TongTien > (h.ThanhToans.Sum(p => (decimal?)p.SoTien) ?? 0m)))
             throw new InvalidOperationException("Cần thanh toán hết công nợ hóa đơn trước khi trả phòng.");
+        var bed = await db.Giuongs.AsNoTracking().SingleAsync(x => x.MaGiuong == contract.MaGiuong);
+        await RoomAssetHandoverStore.SaveMinuteAsync(db, contractId, bed.MaPhong, contract.MaGiuong, "Trả phòng", session!.FullName, handoverNote, handoverItems);
         if (compensationAmount > 0)
-        {
-            var bed = await db.Giuongs.Include(x => x.MaPhongNavigation).SingleAsync(x => x.MaGiuong == contract.MaGiuong);
-            var today = DateOnly.FromDateTime(DateTime.Today);
-            var bill = await db.HoaDons.Where(x => x.MaHopDong == contractId && x.Thang == today.Month && x.Nam == today.Year && x.TrangThai != "Hủy")
-                .SingleOrDefaultAsync();
-            if (bill is null)
-            {
-                var usedPeriods = await db.HoaDons.Where(x => x.MaHopDong == contractId).Select(x => new { x.Thang, x.Nam }).ToListAsync();
-                var year = today.Year; var month = today.Month;
-                for (var i = 0; i < 120 && usedPeriods.Any(x => x.Thang == month && x.Nam == year); i++)
-                { month++; if (month > 12) { month = 1; year++; } }
-                if (usedPeriods.Any(x => x.Thang == month && x.Nam == year)) throw new InvalidOperationException("Không tìm được kỳ hóa đơn còn trống để ghi nhận bồi thường.");
-                bill = new HoaDon
-                {
-                    MaHoaDon = $"BT-{DateTime.Now:yyMMdd}-{Guid.NewGuid().ToString("N")[..15].ToUpperInvariant()}",
-                    MaHopDong = contract.MaHopDong, MaSv = contract.MaSv, MaPhong = bed.MaPhong,
-                    Thang = month, Nam = year, TongTien = 0, HanThanhToan = today,
-                    TrangThai = "Chưa thanh toán", NgayLap = DateTime.Now, GhiChu = "Hóa đơn bồi thường khi bàn giao phòng."
-                };
-                db.HoaDons.Add(bill);
-                await db.SaveChangesAsync();
-            }
-            db.ChiTietHoaDons.Add(new ChiTietHoaDon
-            {
-                MaHoaDon = bill.MaHoaDon, LoaiTien = "Bồi thường tài sản phòng", SoLuong = 1,
-                DonGia = compensationAmount, ThanhTien = compensationAmount,
-                GhiChu = string.IsNullOrWhiteSpace(handoverNote) ? "Bồi thường khi bàn giao phòng." : handoverNote
-            });
-            db.ThanhToans.Add(new ThanhToan
-            {
-                MaHoaDon = bill.MaHoaDon, NgayThanhToan = DateTime.Now, SoTien = compensationAmount,
-                PhuongThuc = paymentMethod, NguoiThu = session!.FullName,
-                GhiChu = "Đã thu tiền bồi thường tài sản/thiết bị khi trả phòng."
-            });
-        }
+            await AddCompensationAsync(db, contract, bed.MaPhong, compensationAmount, handoverNote, paymentMethod, "khi trả phòng");
         contract.TrangThai = "Đã thanh lý";
+        var damageReported = compensationAmount > 0 || handoverItems.Any(HasDamage);
         var handover = damageReported
-            ? $"Bàn giao: đã kiểm tra; đã lập biên bản, thực thu {compensationAmount:N0} đ ({paymentMethod}). {handoverNote}"
-            : handoverNote is null ? "Bàn giao: tài sản đã kiểm tra, không ghi nhận hư hỏng/mất mát."
-                : $"Bàn giao: đã kiểm tra; {handoverNote}";
+            ? $"Trả phòng: đã đối chiếu biên bản tài sản; bồi thường {compensationAmount:N0} đ ({paymentMethod}). {handoverNote}"
+            : handoverNote is null ? "Trả phòng: đã đối chiếu biên bản tài sản, không ghi nhận hư hỏng/mất mát."
+                : $"Trả phòng: đã đối chiếu biên bản tài sản; {handoverNote}";
         contract.GhiChu = AppendHistory(contract.GhiChu, handover);
         await db.SaveChangesAsync();
         await tx.CommitAsync();
+    }
+
+    private static decimal ValidateHandover(bool assetsInspected, bool compensationCollected, string paymentMethod,
+        string? handoverNote, IReadOnlyList<HandoverAssetLine> items)
+    {
+        if (handoverNote?.Length > 180) throw new InvalidOperationException("Ghi chú bàn giao tối đa 180 ký tự.");
+        if (!assetsInspected) throw new InvalidOperationException("Cần đối chiếu danh mục tài sản với biên bản bàn giao trước khi tiếp tục.");
+        decimal total = 0;
+        var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var item in items)
+        {
+            if (string.IsNullOrWhiteSpace(item.Name) || item.Name.Trim().Length > 100)
+                throw new InvalidOperationException("Mỗi dòng bàn giao phải có tên tài sản (tối đa 100 ký tự).");
+            if (!names.Add(item.Name.Trim())) throw new InvalidOperationException("Tên tài sản bị lặp trong biên bản. Gộp số lượng vào một dòng.");
+            if (item.QuantityGiven < 0 || item.QuantityNow < 0 || item.QuantityGiven > 10000 || item.QuantityNow > 10000)
+                throw new InvalidOperationException("Số lượng trên biên bản phải từ 0 đến 10.000.");
+            if (item.ConditionGiven is not ("Tốt" or "Hư hỏng" or "Mất" or "Bảo trì")
+                || item.ConditionNow is not ("Tốt" or "Hư hỏng" or "Mất" or "Bảo trì"))
+                throw new InvalidOperationException("Tình trạng tài sản trên biên bản không hợp lệ.");
+            if (item.Compensation < 0 || item.Compensation > 9999999999999999.99m || item.Note?.Length > 255)
+                throw new InvalidOperationException("Tiền bồi thường hoặc ghi chú từng tài sản không hợp lệ.");
+            if (item.Compensation > 9999999999999999.99m - total) throw new InvalidOperationException("Tổng tiền bồi thường vượt giới hạn.");
+            total += item.Compensation;
+        }
+        var damage = items.Any(HasDamage);
+        if (damage && (total <= 0 || !compensationCollected || (handoverNote is null && items.All(x => string.IsNullOrWhiteSpace(x.Note)))))
+            throw new InvalidOperationException("Khi có hư hỏng/mất mát, cần mô tả, nhập tiền bồi thường và xác nhận đã lập biên bản, thực thu.");
+        if (!damage && total > 0) throw new InvalidOperationException("Chỉ ghi nhận bồi thường khi chi tiết bàn giao thể hiện hư hỏng hoặc mất mát.");
+        if (total > 0 && paymentMethod is not ("Tiền mặt" or "Chuyển khoản VietQR" or "Chuyển khoản ngân hàng"))
+            throw new InvalidOperationException("Vui lòng chọn phương thức thu bồi thường hợp lệ.");
+        return total;
+    }
+
+    private static bool HasDamage(HandoverAssetLine item) => item.QuantityNow < item.QuantityGiven
+        || item.ConditionNow == "Mất"
+        || (item.ConditionNow == "Hư hỏng" && item.ConditionGiven != "Hư hỏng")
+        || item.Compensation > 0;
+
+    private async Task AddCompensationAsync(AppDbContext db, HopDong contract, string roomId, decimal amount,
+        string? note, string paymentMethod, string context)
+    {
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        var bill = await db.HoaDons.Where(x => x.MaHopDong == contract.MaHopDong && x.Thang == today.Month && x.Nam == today.Year && x.TrangThai != "Hủy")
+            .SingleOrDefaultAsync();
+        if (bill is null)
+        {
+            var usedPeriods = await db.HoaDons.Where(x => x.MaHopDong == contract.MaHopDong).Select(x => new { x.Thang, x.Nam }).ToListAsync();
+            var year = today.Year; var month = today.Month;
+            for (var i = 0; i < 120 && usedPeriods.Any(x => x.Thang == month && x.Nam == year); i++)
+            { month++; if (month > 12) { month = 1; year++; } }
+            if (usedPeriods.Any(x => x.Thang == month && x.Nam == year)) throw new InvalidOperationException("Không tìm được kỳ hóa đơn còn trống để ghi nhận bồi thường.");
+            bill = new HoaDon
+            {
+                MaHoaDon = $"BT-{DateTime.Now:yyMMdd}-{Guid.NewGuid().ToString("N")[..15].ToUpperInvariant()}",
+                MaHopDong = contract.MaHopDong, MaSv = contract.MaSv, MaPhong = roomId,
+                Thang = month, Nam = year, TongTien = 0, HanThanhToan = today,
+                TrangThai = "Chưa thanh toán", NgayLap = DateTime.Now, GhiChu = $"Hóa đơn bồi thường tài sản {context}."
+            };
+            db.HoaDons.Add(bill);
+            await db.SaveChangesAsync();
+        }
+        db.ChiTietHoaDons.Add(new ChiTietHoaDon
+        {
+            MaHoaDon = bill.MaHoaDon, LoaiTien = "Bồi thường tài sản phòng", SoLuong = 1,
+            DonGia = amount, ThanhTien = amount,
+            GhiChu = string.IsNullOrWhiteSpace(note) ? $"Bồi thường {context}." : note
+        });
+        db.ThanhToans.Add(new ThanhToan
+        {
+            MaHoaDon = bill.MaHoaDon, NgayThanhToan = DateTime.Now, SoTien = amount,
+            PhuongThuc = paymentMethod, NguoiThu = session!.FullName,
+            GhiChu = $"Đã thu tiền bồi thường tài sản {context}."
+        });
     }
 }

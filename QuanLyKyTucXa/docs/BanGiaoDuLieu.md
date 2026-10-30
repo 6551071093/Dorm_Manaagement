@@ -20,13 +20,13 @@
 ### Máy chưa có database
 
 1. Cài SQL Server và kết nối SSMS bằng instance trên máy nhận.
-2. Chỉ trên database mới, chạy các script trong `database/scripts`: **01 → 02 → 03 → 05**. Không cần 04 vì sẽ dùng LatestData.
+2. Chỉ trên database mới, chạy các script trong `database/scripts`: **01 → 02 → 03 → 05 → 07**. Không cần 04 vì sẽ dùng LatestData.
 3. Trong SSMS mở `database/snapshots/LatestData.sql`, chọn **QuanLyKTXDB** ở danh sách database trên thanh công cụ rồi Execute.
 4. Cấu hình instance cục bộ bằng `appsettings.local.json` như ví dụ dưới; build và chạy WinForms. Đăng nhập **admin / Admin@123** nếu tài khoản admin đang hoạt động trong bản nguồn.
 
 ### Máy đã có database
 
-Sao lưu database của máy nhận trước. Chạy bổ sung **05_UpdateSchema_Catalog.sql** nếu thiếu, rồi chọn database demo cần thay và Execute LatestData.
+Sao lưu database của máy nhận trước. Chạy bổ sung **05_UpdateSchema_Catalog.sql** và **07_UpdateSchema_RoomAssetsHandover.sql** nếu thiếu, rồi chọn database demo cần thay và Execute LatestData.
 
 **LatestData thay thế dữ liệu của database đang chọn, không ghép dữ liệu hai máy.** Script dùng transaction để hoàn tác khi nhập lỗi. Không chạy trên database chứa dữ liệu riêng cần giữ. Không chạy lại 01 hoặc 04 trên database đang sử dụng: chúng xóa/tạo hoặc nạp lại dữ liệu.
 
