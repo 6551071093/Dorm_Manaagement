@@ -1,4 +1,4 @@
-﻿using QuanLyKyTucXa.Infrastructure.Security;
+using QuanLyKyTucXa.Infrastructure.Security;
 using QuanLyKyTucXa.WinForms.Forms.Users;
 using System.Globalization;
 using System.Windows.Forms;

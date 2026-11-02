@@ -1,31 +1,21 @@
 using System.Data;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
+using QuanLyKyTucXa.Application.Interfaces;
 using QuanLyKyTucXa.Infrastructure.Data.Context;
 using QuanLyKyTucXa.Infrastructure.Security;
 
 namespace QuanLyKyTucXa.Infrastructure.Services;
 
-public sealed record UserAccountRow(int Id, string Username, string FullName, string Role, bool Enabled, DateTime? LastLogin)
+public sealed class NguoiDungService(Func<AppDbContext> createDb, AuthSession session) : INguoiDungService
 {
-    public int FailedAttempts { get; init; }
-    public bool LoginLocked { get; init; }
-}
-public sealed record StudentAccountChoice(string Id, string Name);
-public sealed class UserAccountEdit
-{
-    public int? Id { get; set; }
-    public string Username { get; set; } = "";
-    public string FullName { get; set; } = "";
-    public string? Email { get; set; }
-    public string Role { get; set; } = "NhanVien";
-    public bool Enabled { get; set; } = true;
-    public string? StudentId { get; set; }
-    public string? NewPassword { get; set; }
-}
+    public async Task ToggleLockAsync(int id)
+    {
+        var user = await GetAsync(id);
+        user.Enabled = !user.Enabled;
+        await SaveAsync(user);
+    }
 
-public sealed class NguoiDungService(Func<AppDbContext> createDb, AuthSession session)
-{
     public async Task<List<UserAccountRow>> ListAsync()
     {
         await using var db = createDb();
@@ -41,6 +31,7 @@ public sealed class NguoiDungService(Func<AppDbContext> createDb, AuthSession se
         return rows.Select(row => states.TryGetValue(row.Id, out var state)
             ? row with { FailedAttempts = state.Count, LoginLocked = state.Locked } : row).ToList();
     }
+
     public async Task<UserAccountEdit> GetAsync(int id)
     {
         await using var db = createDb();
@@ -50,6 +41,7 @@ public sealed class NguoiDungService(Func<AppDbContext> createDb, AuthSession se
         var studentId = await db.SinhViens.Where(x => x.MaNguoiDung == id).OrderBy(x => x.MaSv).Select(x => x.MaSv).FirstOrDefaultAsync();
         return new UserAccountEdit { Id = id, Username = user.TenDangNhap, FullName = user.HoTen, Email = user.Email, Role = user.VaiTro, Enabled = user.TrangThai, StudentId = studentId };
     }
+
     public async Task<List<StudentAccountChoice>> StudentChoicesAsync(int? userId)
     {
         await using var db = createDb();
@@ -63,7 +55,7 @@ public sealed class NguoiDungService(Func<AppDbContext> createDb, AuthSession se
         value.Username = AccountValidation.Username(value.Username);
         value.FullName = AccountValidation.FullName(value.FullName);
         value.Email = string.IsNullOrWhiteSpace(value.Email) ? null : AccountValidation.Email(value.Email);
-        if(value.Role=="SinhVien" && value.Email is null && value.Id is null) throw new InvalidOperationException("Tài khoản Sinh viên cần email đang sử dụng để nhận OTP.");
+        if (value.Role == "SinhVien" && value.Email is null && value.Id is null) throw new InvalidOperationException("Tài khoản Sinh viên cần email đang sử dụng để nhận OTP.");
         if (value.Role is not ("Admin" or "NhanVien" or "SinhVien")) throw new InvalidOperationException("Vai trò không hợp lệ.");
         if (value.Id is null || !string.IsNullOrEmpty(value.NewPassword)) PasswordHash.ValidateNew(value.NewPassword ?? "");
         var passwordHash = string.IsNullOrEmpty(value.NewPassword) ? null : await Task.Run(() => PasswordHash.Create(value.NewPassword));
@@ -80,7 +72,7 @@ public sealed class NguoiDungService(Func<AppDbContext> createDb, AuthSession se
             throw new InvalidOperationException("Phải giữ lại ít nhất một tài khoản Admin đang hoạt động.");
         if (await db.NguoiDungs.AnyAsync(x => x.TenDangNhap == value.Username && (value.Id == null || x.MaNguoiDung != value.Id)))
             throw new InvalidOperationException("Tên đăng nhập đã tồn tại.");
-        if(value.Email is not null && await db.NguoiDungs.AnyAsync(x=>x.Email==value.Email && (value.Id==null || x.MaNguoiDung!=value.Id)))
+        if (value.Email is not null && await db.NguoiDungs.AnyAsync(x => x.Email == value.Email && (value.Id == null || x.MaNguoiDung != value.Id)))
             throw new InvalidOperationException("Email đã được dùng cho tài khoản khác.");
         SinhVien? student = null;
         if (value.Role == "SinhVien")
@@ -108,7 +100,7 @@ public sealed class NguoiDungService(Func<AppDbContext> createDb, AuthSession se
         // Admin đặt lại mật khẩu sẽ thu hồi mã khôi phục cũ của tài khoản đó.
         if (value.Id is not null && passwordHash is not null)
             await db.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM dbo.TaiKhoanKhoiPhuc WHERE MaNguoiDung = {user.MaNguoiDung}");
-        if(value.Id is not null && (passwordHash is not null || emailChanged))
+        if (value.Id is not null && (passwordHash is not null || emailChanged))
             await db.Database.ExecuteSqlInterpolatedAsync($"IF OBJECT_ID(N'dbo.TaiKhoanOtp',N'U') IS NOT NULL DELETE dbo.TaiKhoanOtp WHERE MaNguoiDung={user.MaNguoiDung}");
         // Admin mở khóa/kích hoạt sẽ xóa bộ đếm sai; lần đăng nhập tiếp theo bắt đầu từ 0.
         if (value.Enabled)

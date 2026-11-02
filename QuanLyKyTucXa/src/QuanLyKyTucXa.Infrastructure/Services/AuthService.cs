@@ -1,17 +1,21 @@
 using System.Collections.Concurrent;
 using Microsoft.EntityFrameworkCore;
+using QuanLyKyTucXa.Application.Interfaces;
 using QuanLyKyTucXa.Infrastructure.Data.Context;
 using QuanLyKyTucXa.Infrastructure.Repositories;
 using QuanLyKyTucXa.Infrastructure.Security;
 
 namespace QuanLyKyTucXa.Infrastructure.Services;
 
-public sealed partial class AuthService(Func<AppDbContext> createDb, IOtpEmailSender? emailSender = null)
+public sealed partial class AuthService(Func<AppDbContext> createDb, IOtpEmailSender? emailSender = null) : IAuthService
 {
     private readonly IOtpEmailSender mailer = emailSender ?? SmtpOtpEmailSender.FromEnvironment();
     private readonly NguoiDungRepository repository = new(createDb);
     private static readonly ConcurrentDictionary<string, (int Count, DateTimeOffset Until)> Attempts = new(StringComparer.OrdinalIgnoreCase);
     private static readonly string DummyHash = PasswordHash.Create("dummy-" + Guid.NewGuid().ToString("N"));
+
+    public Task SendResetOtpAsync(string email) => RequestPasswordOtpAsync(email);
+    public Task ResetPasswordWithOtpAsync(string username, string email, string grant, string newPassword) => ResetPasswordWithGrantAsync(username, email, grant, newPassword);
 
     public async Task<AuthSession> LoginAsync(string username, string password)
     {

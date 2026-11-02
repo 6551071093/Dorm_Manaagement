@@ -22,34 +22,51 @@ public partial class FrmMain
         lblProfileRole.Text = _session.RoleDisplayName;
         lblProfileAvatar.Text = new string(_session.Username.Take(2).ToArray()).ToUpperInvariant();
         classicAccountText.Text = $"Tài khoản: {_session.Username} ({_session.RoleDisplayName}) | {DateTime.Today:dd/MM/yyyy}";
+
         var users = new ToolStripMenuItem("Quản lý tài khoản") { Name = "mnuUsers", Visible = _session.IsAdmin };
         users.Click += (_, _) => ShowUsers();
+
         var handoff = new ToolStripMenuItem("Lưu dữ liệu bàn giao") { Name = "mnuDataHandoff", Visible = _session.IsAdmin };
         handoff.Click += async (_, _) => await SaveDataHandoffAsync(handoff);
         mnuSystem.DropDownItems.Add(handoff);
+
         var password = new ToolStripMenuItem("Đổi mật khẩu") { Name = "mnuChangePassword" };
-        password.Click += (_, _) => {
+        password.Click += (_, _) =>
+        {
             if (_session?.IsActive != true) return;
             using var dialog = new ChangePasswordDialog(new AuthService(() => AppDbContextFactory.Create(_connectionString)), _session);
-            if (dialog.ShowDialog(this) == DialogResult.OK) MessageBox.Show(this, "Đã đổi mật khẩu.", "Tài khoản", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            if (dialog.ShowDialog(this) == DialogResult.OK)
+                MessageBox.Show(this, "Đã đổi mật khẩu.", "Tài khoản", MessageBoxButtons.OK, MessageBoxIcon.Information);
         };
+
         var logout = new ToolStripMenuItem("Đăng xuất") { Name = "mnuLogout" };
         logout.Click += (_, _) => RequestLogout();
+
         mnuSystem.DropDownItems.Insert(1, users);
         mnuSystem.DropDownItems.Insert(2, password);
         mnuSystem.DropDownItems.Insert(3, logout);
         mnuSystem.DropDownItems.Insert(4, new ToolStripSeparator());
+
         var staff = _session.IsStaff;
         mnuCatalog.Visible = staff;
-        mnuContracts.Visible = mnuApprove.Visible = mnuUtility.Visible = mnuReports.Visible = staff;
+        mnuContracts.Visible = mnuApprove.Visible = mnuUtility.Visible = staff;
         tsStudents.Visible = tsContracts.Visible = staff;
         btnHeaderAdd.Visible = staff;
         _searchShell.Visible = staff;
-        btnNavStudents.Visible = btnNavApprovals.Visible = btnNavUtilities.Visible = btnNavReports.Visible = staff;
+
+        // Phân quyền thanh điều hướng
+        btnNavStudents.Visible = staff;
+        btnNavApprovals.Visible = staff;
+        btnNavUtilities.Visible = staff;
         btnOpenStudents.Visible = btnOpenRooms.Visible = btnOpenApprovals.Visible = staff;
-        mnuReports.Visible = btnNavReports.Visible = AuthPolicy.Can(_session, AppPermission.ViewReports);
+
+        // Báo cáo & Thống kê: Chỉ dành cho Admin
+        var canViewReports = AuthPolicy.Can(_session, AppPermission.ViewReports);
+        mnuReports.Visible = btnNavReports.Visible = canViewReports;
+
         var permissions = new ToolStripMenuItem("Quyền hạn của tôi") { Name = "mnuMyPermissions" };
-        permissions.Click += (_, _) => {
+        permissions.Click += (_, _) =>
+        {
             var detail = _session.IsAdmin
                 ? "ADMIN\n• Quản lý tài khoản, phân quyền và mở khóa đăng nhập.\n• Thêm, sửa, xóa phòng và hồ sơ sinh viên.\n• Nhập Excel, xem báo cáo và lưu dữ liệu bàn giao.\n• Đăng ký, duyệt/từ chối đơn và các nghiệp vụ ký túc xá."
                 : _session.IsStaff
@@ -58,8 +75,10 @@ public partial class FrmMain
             MessageBox.Show(this, detail, "Quyền hạn tài khoản", MessageBoxButtons.OK, MessageBoxIcon.Information);
         };
         mnuSystem.DropDownItems.Add(permissions);
+
         var roleInfo = new ToolStripMenuItem("Quyền: " + _session.RoleDisplayName) { Enabled = false };
         mnuSystem.DropDownItems.Insert(0, roleInfo);
+
         if (_session.IsStudent)
         {
             mnuHome.Text = mnuDashboard.Text = "Thông tin cá nhân";
@@ -69,6 +88,28 @@ public partial class FrmMain
             tabDashboard.Text = "Cá nhân";
             tabDashboard.Controls.Remove(pnlHome);
             pnlHome.Visible = false;
+
+            btnNavHome.Text = "🏠  Cá nhân";
+            btnNavRooms.Visible = false;
+            btnNavInvoices.Visible = true;
+            btnNavInvoices.Text = "🧾  Hóa đơn của tôi";
+            btnNavIncidents.Visible = true;
+            btnNavIncidents.Text = "🛠️  Báo hỏng của tôi";
+            btnNavRegistration.Visible = true;
+            btnNavLookup.Visible = true;
+        }
+        else
+        {
+            btnNavHome.Text = "🏠  Tổng quan";
+            btnNavRooms.Visible = true;
+            btnNavInvoices.Visible = true;
+            btnNavInvoices.Text = "🧾  Hóa đơn";
+            btnNavIncidents.Visible = true;
+            btnNavIncidents.Text = "🛠️  Sự cố";
+            btnNavUtilities.Visible = true;
+            btnNavUtilities.Text = "⚡  Điện nước";
+            btnNavRegistration.Visible = true;
+            btnNavLookup.Visible = true;
         }
     }
 
@@ -84,6 +125,7 @@ public partial class FrmMain
         if (_sessionCheck is { IsCompleted: false }) return _sessionCheck;
         return _sessionCheck = ValidateSessionAsync();
     }
+
     private async Task<bool> ValidateSessionAsync()
     {
         if (_session?.IsActive != true) { RequestLogout(); return false; }

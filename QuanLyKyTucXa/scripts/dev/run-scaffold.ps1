@@ -3,7 +3,7 @@
 # DỰ ÁN: QuanLyKyTucXa (.NET 9/10 & C# 12/13)
 # ============================================================================
 
-$connectionString = "Server=(localdb)\MSSQLLocalDB;Database=QuanLyKTXDB;Trusted_Connection=True;TrustServerCertificate=True;"
+$connectionString = "Server=localhost;Database=QuanLyKyTucXa;Trusted_Connection=True;TrustServerCertificate=True;"
 
 Write-Host "=================================================================" -ForegroundColor Cyan
 Write-Host "BAT DAU CHAY SCAFFOLD-DBCONTEXT CHO QUANLYKTXDB..." -ForegroundColor Yellow

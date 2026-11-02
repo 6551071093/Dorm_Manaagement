@@ -575,8 +575,48 @@ public partial class FrmMain : Form
     }
 
 
+
+    private void ShowInvoices()
+    {
+        if (_session?.IsStudent == true) { ShowPersonal("Hóa đơn"); return; }
+        if (!RequireUi(AppPermission.Staff)) return;
+        SelectNav(btnNavInvoices);
+        ShowComingSoon("Hóa đơn");
+    }
+
+    private void ShowUtilities()
+    {
+        if (_session?.IsStudent == true) { ShowPersonal("Hóa đơn"); return; }
+        if (!RequireUi(AppPermission.Staff)) return;
+        SelectNav(btnNavUtilities);
+        ShowComingSoon("Điện nước");
+    }
+
+    private void ShowIncidents()
+    {
+        if (_session?.IsStudent == true) { ShowPersonal("Sự cố"); return; }
+        if (!RequireUi(AppPermission.Staff)) return;
+        SelectNav(btnNavIncidents);
+        ShowComingSoon("Sự cố");
+    }
+
+    private void ShowReports()
+    {
+        if (!RequireUi(AppPermission.ViewReports)) return;
+        SelectNav(btnNavReports);
+        ShowComingSoon("Thống kê");
+    }
+
+    private void ShowPrices()
+    {
+        if (!RequireUi(AppPermission.Staff)) return;
+        ShowComingSoon("Bảng giá và dịch vụ");
+    }
+
     private void ShowChild(Form child, string title, string subtitle)
     {
+        lblPageTitle.Text = title;
+        lblDate.Text = subtitle;
         var page = title == "Phòng" ? tabRooms : title == "Sinh viên" ? tabStudents
             : tabWorkspace.TabPages.Cast<TabPage>().FirstOrDefault(p => p.Text == title);
         page ??= new TabPage(title) { BackColor = Color.FromArgb(246, 246, 250) };
