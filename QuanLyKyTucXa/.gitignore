@@ -60,7 +60,8 @@ artifacts/demo/*
 .DS_Store
 Thumbs.db
 desktop.ini
-
+.agents/
+GEMINI.md
 # Cấu hình/mật khẩu cục bộ cho database chung
 *.local.sql
 *.local.txt
